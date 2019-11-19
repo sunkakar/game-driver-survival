@@ -1,0 +1,11 @@
+
+t_sec = Math.floor(timer/1000);
+0_digit = 0;
+1_digit = 0;
+2_digit = 0;
+
+	
+0_digit = t_sec % 10;
+1_digit = ((t_sec - 0_digit) % 60)/10;
+2_digit = (t_sec - 0_digit - (1_digit*10))/60;
+
