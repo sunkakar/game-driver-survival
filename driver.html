@@ -64,6 +64,20 @@
                 {
                     this._shift = s;
                 }
+                set reset(run)
+                {
+                    if(run == false)
+                    {
+                        this._image.src = './asset/png/car/Car_1_Main_Positions/Car_1_01.png';//def
+                        this._x = 0;
+                        this._y = 0;
+                        this._width = 32;
+                        this._height = 32;
+                        this._dir = 0;
+                        this._timer = 60000;
+                        this._shift = 0;
+                    }
+                }
                 //getter
                 get x()
                 {
@@ -102,17 +116,6 @@
                     return this._shift;
                 }
                 //method
-                reset()
-                {
-                    this._image.src = './asset/png/car/Car_1_Main_Positions/Car_1_01.png';//def
-                    this._x = 0;
-                    this._y = 0;
-                    this._width = 32;
-                    this._height = 32;
-                    this._dir = 0;
-                    this._timer = 60000;
-                    this._shift = 0;
-                }
                 rotate(a)
                 {
                     //clockwise increments
@@ -146,10 +149,15 @@
                     }
 
                 }
-            };
+                test(string)
+                {
+                    console.log("Yo. I work: ",string); 
+                }
+            }
+
             class gameHandler
             {
-                constructor()
+                constructor(user = null)
                 {
                     this._map = document.getElementsByTagName("canvas")[0];
                     //document.getElementById("gameBoard");
@@ -157,7 +165,8 @@
                     this._map.width = window.width;
                     this._game = this._map.getContext("2d");
                     //this._touchies = [];
-                    this._user = new player();
+                    //let user = new player();
+                    this._user = Object.create(player);
                     this._playing = false;
                     this._runtime = 0;// in ms -> 1000 = 1 sec
                     this._keyDur = 0;
@@ -219,6 +228,26 @@
                             break;
                     }
                 }
+                
+                run()
+                {
+                    if(this._playing == true && this._user.timeLeft > 0 )
+                    {
+                        this._keyDur += this._interval;
+                        this._runtime += this._interval;
+                        this._user.timer -= this._interval;
+
+
+                    }
+                    else if(this._playing == true)
+                    {
+                        this._playing = false;
+                        this._user.reset= this._playing;
+                        document.getElementById("startBtn").disabled = false;
+                        clearInterval();
+                    }
+                    
+                }
                 start()
                 {
                     if(this._playing === false)
@@ -228,21 +257,6 @@
                         document.getElementById("startBtn").disabled = true;
                         this._playing = true;
                         setInterval(this.run, this._interval);
-                    }
-                }
-                run()
-                {
-                    if(this._playing === true && this._user.timeLeft > 0 )
-                    {
-                        this._keyDur += this._interval;
-                        this._runtime += this._interval;
-                    }
-                    else
-                    {
-                        this._playing = false;
-                        this._user.reset();
-                        document.getElementById("startBtn").disabled = false;
-                        clearInterval();
                     }
                 }
                 drawPlayer() 
@@ -256,8 +270,10 @@
                     this._game.rotate(this._user.shift);
                 }
 
-            };
-            var invoEngine = new gameHandler();
+            }
+            let user = new player();
+            //user.reset();
+            var invoEngine = new gameHandler(user);
         </script>
     </body>
 </html>
