@@ -1,0 +1,23 @@
+{
+  "name": "game-driver-survival",
+  "version": "1.0.0",
+  "description": "HTML5 GAME!",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunkakar/game-driver-survival.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sunkakar/game-driver-survival/issues"
+  },
+  "homepage": "https://github.com/sunkakar/game-driver-survival#readme",
+  "dependencies": {
+    "http-server": "^0.12.0",
+    "phaser": "^3.21.0"
+  }
+}
