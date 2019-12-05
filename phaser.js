@@ -1,47 +1,44 @@
-var config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 200 }
-        }
-    },
+const config = {
+    type: Phaser.AUTO, // Which renderer to use
+    width: 800, // Canvas width in pixels
+    height: 600, // Canvas height in pixels
+    parent: "game-container", // ID of the DOM element to add the canvas to
     scene: {
-        preload: preload,
-        create: create
+      preload: preload,
+      create: create,
+      update: update
     }
-};
+  };
+  
+  const game = new Phaser.Game(config);
+  
+  function preload() {
+    // Runs once, loads up assets like images and audio
+    this.load.image("grass", "./asset/png/tile/Grass_Tile (2).png");
+  }
+  
+  function create() {
+    // Runs once, after all assets in preload are loaded
+    const level = [
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ]
+      ];
 
-var game = new Phaser.Game(config);
-
-function preload ()
-{
-    this.load.setBaseURL('http://labs.phaser.io');
-
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-    this.load.image('red', 'assets/particles/red.png');
-}
-
-function create ()
-{
-    this.add.image(400, 300, 'sky');
-
-    var particles = this.add.particles('red');
-
-    var emitter = particles.createEmitter({
-        speed: 100,
-        scale: { start: 1, end: 0 },
-        blendMode: 'ADD'
-    });
-
-    var logo = this.physics.add.image(400, 100, 'logo');
-
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
-
-    emitter.startFollow(logo);
-}
+      //const map = this.make.tilemap({ data: level, tileWidth: 16, tileHeight: 16 });
+      const map = this.make
+      const tiles = map.Tile(layer, 0, 0, 0, 50, 50);
+      const layer = map.createStaticLayer(0, tiles, 0, 0);
+  }
+  
+  function update(time, delta) {
+    // Runs once per frame for the duration of the scene
+  }
