@@ -14,7 +14,7 @@ const config = {
   
   function preload() {
     // Runs once, loads up assets like images and audio
-    this.load.image("grass", "./asset/png/tile/Grass_Tile (2).png");
+    this.load.image("grass", "./asset/png/tile/Background_Tiles/Grass_Tile.png");
   }
   
   function create() {
@@ -34,9 +34,11 @@ const config = {
       ];
 
       //const map = this.make.tilemap({ data: level, tileWidth: 16, tileHeight: 16 });
-      const map = this.make
-      const tiles = map.Tile(layer, 0, 0, 0, 50, 50);
-      const layer = map.createStaticLayer(0, tiles, 0, 0);
+      //const map = this.make
+      //const tiles = map.Tile(layer, 0, 0, 0, 50, 50);
+      //const layer = map.createStaticLayer(0, tiles, 0, 0);
+      var background = this.add.sprite(0, 0, "grass", "./asset/png/tile/Grass_Tile (2).png");
+      //background.setScale(3, 2.4);
   }
   
   function update(time, delta) {
