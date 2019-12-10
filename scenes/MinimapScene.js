@@ -73,7 +73,7 @@ export class MinimapScene extends Phaser.Scene{
         //collisionLayer.setDepth(2);
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
         
-        this._F11 = this.input.keyboard.addKey(Phaser.Keyboard.F11);
+        //this._F11 = this.input.keyboard.addKey(this.Keyboard.F11);  //Fix
         this._score = this.add.text(16, 16, this._text, {
                 font: "18px monospace",
                 fill: "#ffffff",
