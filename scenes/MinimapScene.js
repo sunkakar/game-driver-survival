@@ -13,10 +13,12 @@ export class MinimapScene extends Phaser.Scene{
         this._health = health;
         this._score = null;
         this._lostGame = false;
+        this._phone = null;
     }
 
     init(msg){
         console.log("Minimap: ", msg );
+        this._text = "Health: 100%";
     }
 
     preload(){
@@ -29,10 +31,14 @@ export class MinimapScene extends Phaser.Scene{
         this.load.image("RPGTileset", "./asset/spritesheet/TilesetPyxel.png");
         this.load.tilemapTiledJSON("map", "./asset/spritesheet/map_updated.json");
 
+        this.load.image("phone", "./asset/phone/mobile.png");
+        this.load.image("screen_bg", "./asset/phone/minions.png");
     }
 
-    create(){
-
+    create()
+    {   
+        // Screen Data
+        const { width, height } = this.sys.game.config;
 
         // Map Setup
         const map = this.make.tilemap({ key: "map" });
@@ -52,15 +58,13 @@ export class MinimapScene extends Phaser.Scene{
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
         
 
-        let score = this.add.text(16, 16, this._text, {
+        this._score = this.add.text(16, 16, this._text, {
                 font: "18px monospace",
                 fill: "#ffffff",
                 padding: { x: 20, y: 10 },
                 backgroundColor: "#000000"
             })
             .setScrollFactor(0);
-
-        //let endGame = this.scene.start( ActiveScene.AvailableScenes.GameOver, "Menu -> Minimap" );
         
         // Camera View Settings
         const camera = this.cameras.main;
@@ -79,21 +83,22 @@ export class MinimapScene extends Phaser.Scene{
         // Update Damage taken by player 
         let healthvalue = this._health;
         this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
-            console.log('collision :', healthvalue, this._text, this._lostGame);
+            healthvalue = healthvalue - Math.floor(Math.random()*(8)+1);
             if(healthvalue > 0)
             {
-                healthvalue = healthvalue - 50;
                 this.scene._text = "Health: " + healthvalue + "%";
-                score.setText(this.scene._text);    
+                this.scene._score.setText(this.scene._text);    
             } 
             else
             {
-                //endGame;
-                console.log(this);
+                // Game Over: Send to new Game Over scene
                 this.scene.endGame();
-                
             }
         });
+
+        // Phone Graphic
+        this._phone = this.add.image( width*0.85 , height*0.8 ,"phone").setScale(0.5).setDepth(10).setScrollFactor(0);
+        let screen_bg = this.add.image(width*0.85,height*0.85, 'screen_bg').setScale(0.3).setDepth(8).setScrollFactor(0);
 
     }
 

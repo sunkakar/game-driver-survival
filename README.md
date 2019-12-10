@@ -52,4 +52,10 @@ https://www.audioblocks.com/collections/video-game-music
 https://kubigames.itch.io/road-tiles
 
 https://midnite6.itch.io/classic-rpg-tileset-16x16?download
+
+http://www.transparentpng.com/download/mobile-clipart-hd_10842.html
+
+https://www.zedge.net/find/wallpapers/minions
+
+http://www.transparentpng.com/download/speech-bubble-clip-art-at-pic_4233.html
 ```

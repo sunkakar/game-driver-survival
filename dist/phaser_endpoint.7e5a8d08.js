@@ -360,6 +360,7 @@ function (_Phaser$Scene) {
     _this._health = health;
     _this._score = null;
     _this._lostGame = false;
+    _this._phone = null;
     return _this;
   }
 
@@ -367,6 +368,7 @@ function (_Phaser$Scene) {
     key: "init",
     value: function init(msg) {
       console.log("Minimap: ", msg);
+      this._text = "Health: 100%";
     }
   }, {
     key: "preload",
@@ -377,13 +379,19 @@ function (_Phaser$Scene) {
       this.load.image("roads2W", "./asset/spritesheet/roads2W.png");
       this.load.image("RPGTileset", "./asset/spritesheet/TilesetPyxel.png");
       this.load.tilemapTiledJSON("map", "./asset/spritesheet/map_updated.json");
+      this.load.image("phone", "./asset/phone/mobile.png");
+      this.load.image("screen_bg", "./asset/phone/minions.png");
     }
   }, {
     key: "create",
     value: function create() {
       var _this2 = this;
 
-      // Map Setup
+      // Screen Data
+      var _this$sys$game$config = this.sys.game.config,
+          width = _this$sys$game$config.width,
+          height = _this$sys$game$config.height; // Map Setup
+
       var map = this.make.tilemap({
         key: "map"
       });
@@ -399,7 +407,7 @@ function (_Phaser$Scene) {
       this.matter.world.convertTilemapLayer(collisionLayer); //collisionLayer.setDepth(2);
 
       this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20);
-      var score = this.add.text(16, 16, this._text, {
+      this._score = this.add.text(16, 16, this._text, {
         font: "18px monospace",
         fill: "#ffffff",
         padding: {
@@ -407,8 +415,7 @@ function (_Phaser$Scene) {
           y: 10
         },
         backgroundColor: "#000000"
-      }).setScrollFactor(0); //let endGame = this.scene.start( ActiveScene.AvailableScenes.GameOver, "Menu -> Minimap" );
-      // Camera View Settings
+      }).setScrollFactor(0); // Camera View Settings
 
       var camera = this.cameras.main;
       camera.startFollow(this._player);
@@ -424,18 +431,20 @@ function (_Phaser$Scene) {
 
       var healthvalue = this._health;
       this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
-        console.log('collision :', healthvalue, this._text, this._lostGame);
+        healthvalue = healthvalue - Math.floor(Math.random() * 8 + 1);
 
         if (healthvalue > 0) {
-          healthvalue = healthvalue - 50;
           this.scene._text = "Health: " + healthvalue + "%";
-          score.setText(this.scene._text);
+
+          this.scene._score.setText(this.scene._text);
         } else {
-          //endGame;
-          console.log(this);
+          // Game Over: Send to new Game Over scene
           this.scene.endGame();
         }
-      });
+      }); // Phone Graphic
+
+      this._phone = this.add.image(width * 0.85, height * 0.8, "phone").setScale(0.5).setDepth(10).setScrollFactor(0);
+      var screen_bg = this.add.image(width * 0.85, height * 0.85, 'screen_bg').setScale(0.3).setDepth(8).setScrollFactor(0);
     }
   }, {
     key: "update",
