@@ -4,7 +4,10 @@
   "description": "HTML5 GAME!",
   "main": "phaser.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "predeploy": "rm -rf dist && parcel build index.html",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -20,5 +23,9 @@
     "http-server": "^0.12.0",
     "parcel-bundler": "^1.12.4",
     "phaser": "^3.21.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^2.1.1",
+    "parcel": "^1.12.4"
   }
 }

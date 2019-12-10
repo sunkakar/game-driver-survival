@@ -83,7 +83,7 @@ class contact
     {
         if(this._threshold > 0)
         {
-            this._threshold += (Math.floor(Math.random() * Math.floor(this. relationship))) + (-1 + (Math.floor(Math.random() * Math.floor(2))))*social);
+            //this._threshold += (Math.floor(Math.random() * Math.floor(this. relationship))) + (-1 + (Math.floor(Math.random() * Math.floor(2))))*social);
         }
         if(this._threshold <= 0)
         {
