@@ -362,6 +362,9 @@ function (_Phaser$Scene) {
     _this._lostGame = false;
     _this._phone = null;
     _this._data = [];
+    _this._lastphoneEvent = null;
+    _this._phoneEventTimer = null;
+    _this._phonescreen_bg = null;
     return _this;
   }
 
@@ -370,6 +373,8 @@ function (_Phaser$Scene) {
     value: function init(msg) {
       console.log("Minimap: ", msg);
       this._text = "Health: 100%";
+      this._lastphoneEvent = this.time.now;
+      this._phoneEventTimer = 10;
     }
   }, {
     key: "preload",
@@ -417,6 +422,15 @@ function (_Phaser$Scene) {
           y: 10
         },
         backgroundColor: "#000000"
+      }).setScrollFactor(0);
+      var socialscore = this.add.text(16, 60, "Social Score: 10/10", {
+        font: "18px monospace",
+        fill: "#ffffff",
+        padding: {
+          x: 20,
+          y: 10
+        },
+        backgroundColor: "#000000"
       }).setScrollFactor(0); // Camera View Settings
 
       var camera = this.cameras.main;
@@ -444,18 +458,29 @@ function (_Phaser$Scene) {
           this.scene.endGame();
         }
       }); // Phone Graphic
+      /// We create a Container for the Phone 
 
       this._phone = this.add.image(width * 0.85, height * 0.8, "phone").setScale(0.5).setDepth(10).setScrollFactor(0);
-      var screen_bg = this.add.image(width * 0.85, height * 0.85, 'screen_bg').setScale(0.9).setDepth(8).setScrollFactor(0);
-      this._question = this.add.text(width * 0.75, height * 0.6, "What did you eat for breakfast?", {
+      this._phonescreen_bg = this.add.image(width * 0.85, height * 0.85, 'screen_bg').setScale(0.9).setDepth(8).setScrollFactor(0);
+      this._question = this.add.text(width * 0.75, height * 0.6, "Wanna Hangout?", {
         font: "15px monospace",
-        fill: "#000000",
+        fill: "#ffffff",
         padding: {
           x: 15,
           y: 10
         },
-        backgroundColor: "#ffffff"
-      }).setDepth(9).setScrollFactor(0).setResolution(5); //this._answers = 
+        backgroundColor: "#000000"
+      }).setDepth(9).setScrollFactor(0).setResolution(10);
+      this._lastphoneEvent = this.time.now;
+
+      this._phone.setVisible(false);
+
+      this._phonescreen_bg.setVisible(false);
+
+      this._question.setVisible(false); //let timedEvent = this.time.now;
+      //console.log(timedEvent);
+      //delayedCall(3000, this.onPhoneSubmit, [], this);
+
     }
   }, {
     key: "update",
@@ -470,18 +495,26 @@ function (_Phaser$Scene) {
 
       this._player.setMass(50);
 
-      this._player.setFixedRotation();
+      this._player.setFixedRotation(); // Forward Motion 
 
-      if (cursors.left.isDown) {
-        this._player.setAngularVelocity(-0.03);
-      } else if (cursors.right.isDown) {
-        this._player.setAngularVelocity(0.03);
-      }
 
       if (cursors.up.isDown) {
         this._player.thrust(0.5);
       } else if (cursors.down.isDown) {
         this._player.thrust(-0.5);
+      } // Turning Motion
+
+
+      if (cursors.left.isDown) {
+        this._player.setAngularVelocity(-0.03);
+      } else if (cursors.right.isDown) {
+        this._player.setAngularVelocity(0.03);
+      } // Timer Setup for Phone Events
+
+
+      if (this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000) > 0) {
+        this.onPhoneSubmit();
+      } else {//Nothing
       }
     }
   }, {
@@ -489,6 +522,28 @@ function (_Phaser$Scene) {
     value: function endGame() {
       this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over");
     }
+  }, {
+    key: "onPhoneSubmit",
+    value: function onPhoneSubmit() {
+      this._phone.setVisible(true);
+
+      this._phonescreen_bg.setVisible(true);
+
+      this._question.setVisible(true);
+
+      console.log("Phone Event Triggerrred");
+      this._lastphoneEvent = this.time.now;
+
+      if (this._phoneEventTimer - 1 > 5) {
+        this._phoneEventTimer -= 1;
+      } else {
+        //Do Nothing
+        console.log("Fastest Speed");
+      }
+    }
+  }, {
+    key: "phoneFade",
+    value: function phoneFade() {}
   }]);
 
   return MinimapScene;
@@ -681,7 +736,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62758" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51442" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

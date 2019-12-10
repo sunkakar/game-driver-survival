@@ -15,14 +15,21 @@ export class MinimapScene extends Phaser.Scene{
         this._lostGame = false;
         this._phone = null;
         this._data = [];
+        this._lastphoneEvent = null;
+        this._phoneEventTimer = null; 
+        this._phonescreen_bg = null;
     }
 
-    init(msg){
+    init(msg)
+    {
         console.log("Minimap: ", msg );
         this._text = "Health: 100%";
+        this._lastphoneEvent = this.time.now;
+        this._phoneEventTimer = 10;
     }
 
-    preload(){
+    preload()
+    {
 
         this.load.image('menu_bg', './asset/menu/menu-bg.png');
         //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
@@ -67,6 +74,14 @@ export class MinimapScene extends Phaser.Scene{
                 backgroundColor: "#000000"
             })
             .setScrollFactor(0);
+
+        let socialscore = this.add.text(16, 60, "Social Score: 10/10", {
+                font: "18px monospace",
+                fill: "#ffffff",
+                padding: { x: 20, y: 10 },
+                backgroundColor: "#000000"
+            })
+            .setScrollFactor(0);
         
         // Camera View Settings
         const camera = this.cameras.main;
@@ -98,19 +113,34 @@ export class MinimapScene extends Phaser.Scene{
             }
         });
 
+
         // Phone Graphic
+        /// We create a Container for the Phone 
         this._phone = this.add.image( width*0.85 , height*0.8 ,"phone").setScale(0.5).setDepth(10).setScrollFactor(0);
-        let screen_bg = this.add.image(width*0.85,height*0.85, 'screen_bg').setScale(0.9).setDepth(8).setScrollFactor(0);
-        this._question = this.add.text(width*0.75,height*0.6, "What did you eat for breakfast?", {
+        this._phonescreen_bg = this.add.image(width*0.85,height*0.85, 'screen_bg').setScale(0.9).setDepth(8).setScrollFactor(0);
+        this._question = this.add.text(width*0.75,height*0.6, "Wanna Hangout?", {
             font: "15px monospace",
-            fill: "#000000",padding: { x: 15, y: 10 },backgroundColor: "#ffffff"}).setDepth(9).setScrollFactor(0).setResolution(5);
-        //this._answers = 
+            fill: "#ffffff",padding: { x: 15, y: 10 },backgroundColor: "#000000"}).setDepth(9).setScrollFactor(0).setResolution(10);
         
+        this._lastphoneEvent = this.time.now;
+
+        this._phone.setVisible(false);
+        this._phonescreen_bg.setVisible(false);
+        this._question.setVisible(false);
+
+        
+        //let timedEvent = this.time.now;
+        //console.log(timedEvent);
+
+        
+        
+        //delayedCall(3000, this.onPhoneSubmit, [], this);
 
 
     }
 
-    update(time, delta){
+    update(time, delta)
+    {
         //controls.update(delta);
         let cursors = this.input.keyboard.createCursorKeys();
 
@@ -121,15 +151,7 @@ export class MinimapScene extends Phaser.Scene{
         this._player.setMass(50);
         this._player.setFixedRotation();
 
-        if (cursors.left.isDown)
-        {
-            this._player.setAngularVelocity(-0.03);
-        }
-        else if (cursors.right.isDown)
-        {
-            this._player.setAngularVelocity(0.03);
-        }
-
+        // Forward Motion 
         if (cursors.up.isDown)
         {
             this._player.thrust(0.5);
@@ -138,11 +160,57 @@ export class MinimapScene extends Phaser.Scene{
         {
             this._player.thrust(-0.5);
         }
-        
+
+
+        // Turning Motion
+        if (cursors.left.isDown)
+        {
+            this._player.setAngularVelocity(-0.03);
+        }
+        else if (cursors.right.isDown)
+        {
+            this._player.setAngularVelocity(0.03);
+        }        
+
+        // Timer Setup for Phone Events
+        if(this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) > 0)
+        {
+            this.onPhoneSubmit();
+        }
+        else
+        {
+            //Nothing
+        }
+
     }
 
     endGame() {
         this.scene.start( ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over" );
+    }
+
+    onPhoneSubmit ()
+    {
+        this._phone.setVisible(true);
+        this._phonescreen_bg.setVisible(true);
+        this._question.setVisible(true);
+        
+        console.log("Phone Event Triggerrred");
+
+            this._lastphoneEvent = this.time.now;
+            if(this._phoneEventTimer - 1 > 5)
+            {
+                this._phoneEventTimer -= 1;
+            }
+            else 
+            {
+                //Do Nothing
+                console.log("Fastest Speed");
+            }
+    }
+
+    phoneFade() 
+    {
+        
     }
 
 }
