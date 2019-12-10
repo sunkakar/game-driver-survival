@@ -196,7 +196,7 @@ function (_Phaser$Scene) {
           frameHeight: 512,
           frameWidth: 512
         });
-        this.load.image('car', './asset/png/car/Car_1_Main_Positions/Car_1_01.png');
+        this.load.image('car', './asset/png/car/Car_1_Main_Positions/Car_Sprite.png');
         this.load.image('menu_logo', './asset/menu/game-logo.png');
         this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.image("tiles", "../dist/asset/spritesheet/roads2W.png");
         //this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
@@ -375,6 +375,8 @@ function (_Phaser$Scene) {
   }, {
     key: "create",
     value: function create() {
+      var _this2 = this;
+
       // Map Setup
       var map = this.make.tilemap({
         key: "map"
@@ -382,19 +384,17 @@ function (_Phaser$Scene) {
       var tileset = map.addTilesetImage("roads2W", "roads2W");
       var tileset2 = map.addTilesetImage("RPG TileSet", "RPGTileset"); // Map rendered based on Layers 
 
-      var baseLayer = map.createStaticLayer("Map", tileset, 0, 0).setScale(3);
-      var collisionLayer = map.createStaticLayer("Trees", tileset2, 0, 0).setScale(3);
-      var layer3 = map.createStaticLayer("Bridge", tileset2, 0, 0).setScale(3); //collisionLayer.setCollisionByProperty({ collision: true });
-      //collisionLayer.setDepth(2);
+      var baseLayer = map.createDynamicLayer("Map", tileset, 0, 0).setScale(3);
+      var collisionLayer = map.createDynamicLayer("Trees", tileset2, 0, 0).setScale(3);
+      var layer3 = map.createDynamicLayer("Bridge", tileset2, 0, 0).setScale(3);
+      collisionLayer.setCollisionByProperty({
+        canCollide: true
+      });
+      this.matter.world.convertTilemapLayer(collisionLayer); //collisionLayer.setDepth(2);
 
-      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20);
-
-      this._player.setCollidesWith(collisionLayer.setCollisionByProperty({
-        collision: true
-      })); //this._player.body.rotate = 90;
+      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20); //this._player.body.rotate = 90;
       //this._player.setFixedRotation(90);
       //this.physics.add.collider(this._player, collisionLayer);
-
 
       this.add.text(16, 16, "Get to your Destinations!", {
         font: "18px monospace",
@@ -408,6 +408,16 @@ function (_Phaser$Scene) {
       var camera = this.cameras.main;
       camera.startFollow(this._player);
       camera.setBounds(0, 0, 2300, 1530);
+      this.matter.world.createDebugGraphic();
+      this.matter.world.drawDebug = false;
+      this.input.keyboard.on("keydown_D", function (event) {
+        _this2.matter.world.drawDebug = !_this2.matter.world.drawDebug;
+
+        _this2.matter.world.debugGraphic.clear();
+      });
+      this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+        console.log('collision :', this.scene); //LostGame();
+      });
     }
   }, {
     key: "update",
@@ -443,6 +453,95 @@ function (_Phaser$Scene) {
 }(Phaser.Scene);
 
 exports.MinimapScene = MinimapScene;
+},{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"scenes/GameOverScene.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.GameOverScene = void 0;
+
+var _ACTIVE_SCENE = require("./ACTIVE_SCENE.js");
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Menu Scene
+/// Displays the Menu and shows options
+var GameOverScene =
+/*#__PURE__*/
+function (_Phaser$Scene) {
+  _inherits(GameOverScene, _Phaser$Scene);
+
+  function GameOverScene() {
+    _classCallCheck(this, GameOverScene);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(GameOverScene).call(this, {
+      key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.GameOver
+    }));
+  }
+
+  _createClass(GameOverScene, [{
+    key: "init",
+    value: function init(msg) {
+      console.log("Menu: ", msg);
+    }
+  }, {
+    key: "preload",
+    value: function preload() {}
+  }, {
+    key: "create",
+    value: function create() {
+      var _this = this;
+
+      // Height and Width for screen
+      var _this$sys$game$config = this.sys.game.config,
+          width = _this$sys$game$config.width,
+          height = _this$sys$game$config.height;
+      var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
+      logo.setScale(2);
+      var carmouse = this.add.sprite(300, 300, 'car');
+      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false);
+      var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
+      this.add.text(350, 300, "Play Again!", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      playButton.setScale(3).setResolution(5);
+      playButton.setInteractive();
+      playButton.on("pointerover", function () {
+        carmouse.setVisible(true);
+      });
+      playButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      playButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu, "Menu -> Minimap");
+      });
+    }
+  }]);
+
+  return GameOverScene;
+}(Phaser.Scene);
+
+exports.GameOverScene = GameOverScene;
 },{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"phaser_endpoint.js":[function(require,module,exports) {
 "use strict";
 
@@ -451,6 +550,8 @@ var _LoadScene = require("./scenes/LoadScene");
 var _MenuScene = require("./scenes/MenuScene");
 
 var _MinimapScene = require("./scenes/MinimapScene");
+
+var _GameOverScene = require("./scenes/GameOverScene");
 
 var config = {
   type: Phaser.AUTO,
@@ -461,7 +562,7 @@ var config = {
   // Canvas height in pixels
   backgroundColor: '#f09020',
   parent: "game-container",
-  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene],
+  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene, _GameOverScene.GameOverScene],
   render: {
     pixelArt: true
   },
@@ -510,7 +611,7 @@ var game = new Phaser.Game(config); // function preload() {
 // function update(time, delta) {
 //   // Runs once per frame for the duration of the scene
 // }
-},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -538,7 +639,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54899" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62266" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -29,7 +29,7 @@ export class LoadScene extends Phaser.Scene{
                 frameWidth: 512
             })
 
-            this.load.image('car', './asset/png/car/Car_1_Main_Positions/Car_1_01.png');
+            this.load.image('car', './asset/png/car/Car_1_Main_Positions/Car_Sprite.png');
             this.load.image('menu_logo', './asset/menu/game-logo.png');
             this.load.image('menu_bg', './asset/menu/menu-bg.png');
 

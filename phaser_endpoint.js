@@ -1,6 +1,7 @@
 import { LoadScene } from './scenes/LoadScene';
 import { MenuScene } from './scenes/MenuScene';
 import { MinimapScene } from './scenes/MinimapScene';
+import { GameOverScene } from './scenes/GameOverScene';
 
 const config = {
     type: Phaser.AUTO, // Which renderer to use
@@ -11,7 +12,8 @@ const config = {
     scene: [
       LoadScene, 
       MenuScene,
-      MinimapScene
+      MinimapScene,
+      GameOverScene
     ],
     render:{
       pixelArt: true

@@ -35,13 +35,16 @@ export class MinimapScene extends Phaser.Scene{
         const tileset2 = map.addTilesetImage("RPG TileSet", "RPGTileset");
 
         // Map rendered based on Layers 
-        const baseLayer = map.createStaticLayer("Map", tileset, 0, 0).setScale(3);
-        const collisionLayer = map.createStaticLayer("Trees", tileset2, 0, 0).setScale(3);
-        const layer3 = map.createStaticLayer("Bridge", tileset2, 0, 0).setScale(3);
-        //collisionLayer.setCollisionByProperty({ collision: true });
+        const baseLayer = map.createDynamicLayer("Map", tileset, 0, 0).setScale(3);
+        const collisionLayer = map.createDynamicLayer("Trees", tileset2, 0, 0).setScale(3);
+        const layer3 = map.createDynamicLayer("Bridge", tileset2, 0, 0).setScale(3);
+        collisionLayer.setCollisionByProperty({ canCollide: true });
+
+        this.matter.world.convertTilemapLayer(collisionLayer);
+    
+
         //collisionLayer.setDepth(2);
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
-        this._player.setCollidesWith(collisionLayer.setCollisionByProperty({ collision: true }));
         //this._player.body.rotate = 90;
         //this._player.setFixedRotation(90);
         //this.physics.add.collider(this._player, collisionLayer);
@@ -59,8 +62,18 @@ export class MinimapScene extends Phaser.Scene{
         const camera = this.cameras.main;
         camera.startFollow(this._player);
         camera.setBounds(0, 0, 2300, 1530);
-        
 
+        this.matter.world.createDebugGraphic();
+        this.matter.world.drawDebug = false;
+        this.input.keyboard.on("keydown_D", event => {
+            this.matter.world.drawDebug = !this.matter.world.drawDebug;
+            this.matter.world.debugGraphic.clear();
+        });
+        
+        this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+            console.log('collision :', this.scene);
+            //LostGame();
+        });
     }
 
     update(time, delta){
@@ -92,7 +105,7 @@ export class MinimapScene extends Phaser.Scene{
         {
             this._player.thrust(-0.5);
         }
-
         
     }
+
 }
