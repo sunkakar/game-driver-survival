@@ -23,6 +23,8 @@ export class MinimapScene extends Phaser.Scene{
         this._option2 = null;
         this._option3 = null;
         this._F11 = null;
+        this._angularVel = 0.03;
+        this._thrust = 0.2;
     }
 
     init(msg)
@@ -72,6 +74,7 @@ export class MinimapScene extends Phaser.Scene{
 
         //collisionLayer.setDepth(2);
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
+        //this._player.setInertia(body,10);
         
         //this._F11 = this.input.keyboard.addKey(this.Keyboard.F11);  //Fix
         this._score = this.add.text(16, 16, this._text, {
@@ -97,12 +100,12 @@ export class MinimapScene extends Phaser.Scene{
 
 
         // DEBUG Rules
-        this.matter.world.createDebugGraphic();
-        this.matter.world.drawDebug = false;
-        this.input.keyboard.on("keydown_D", event => {
-            this.matter.world.drawDebug = !this.matter.world.drawDebug;
-            this.matter.world.debugGraphic.clear();
-        });
+        // this.matter.world.createDebugGraphic();
+        // this.matter.world.drawDebug = false;
+        // this.input.keyboard.on("keydown_D", event => {
+        //     this.matter.world.drawDebug = !this.matter.world.drawDebug;
+        //     this.matter.world.debugGraphic.clear();
+        // });
 
         // Update Damage taken by player 
         let healthvalue = this._health;
@@ -167,35 +170,36 @@ export class MinimapScene extends Phaser.Scene{
     update(time, delta)
     {
         //controls.update(delta);
-        let cursors = this.input.keyboard.createCursorKeys();
+        let cursors = //this.input.keyboard.createCursorKeys();
+        this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D});
         const { width, height } = this.sys.game.config;
 
-        this._player.setVelocity(0);
+        //this._player.setVelocity(0);
         //this._player.velocity.normalize().scale(playerSpeed);
 
         this._player.setFrictionAir(0.15);
-        this._player.setMass(50);
+        this._player.setMass(100);
         this._player.setFixedRotation();
 
         // Forward Motion 
         if (cursors.up.isDown)
         {
-            this._player.thrust(0.5);
+            this._player.thrust(this._thrust);
         }
         else if (cursors.down.isDown)
         {
-            this._player.thrust(-0.5);
+            this._player.thrust(-this._thrust*0.8);
         }
 
 
         // Turning Motion
         if (cursors.left.isDown)
         {
-            this._player.setAngularVelocity(-0.03);
+            this._player.setAngularVelocity( - this._angularVel);   
         }
         else if (cursors.right.isDown)
         {
-            this._player.setAngularVelocity(0.03);
+            this._player.setAngularVelocity( this._angularVel);
         }        
         // if(this._F11.isDown)
         // {
@@ -225,7 +229,6 @@ export class MinimapScene extends Phaser.Scene{
     onPhoneSubmit ()
     {
         console.log("Phone Event Triggerrred");
-
         this._lastphoneEvent = this.time.now;
         if(this._phoneEventTimer - 1 > 5)
         {
@@ -251,6 +254,9 @@ export class MinimapScene extends Phaser.Scene{
             this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
             console.log("Fastest Speed");
         }
+        
+
+        
     }
 
     phoneHighlight(option, highlight) 
@@ -268,6 +274,15 @@ export class MinimapScene extends Phaser.Scene{
 
         option.on("pointerup", () => {
             console.log("Submission", option._text);
+            this._phone.setAlpha(0);
+            this._phonescreen_bg.setAlpha(0);
+            this._question.setAlpha(0);
+            this._option1.setAlpha(0);
+            this._option2.setAlpha(0);
+            this._option3.setAlpha(0);
+
+            this._angularVel = this._angularVel + 0.04/3;
+            this._thrust = this._thrust + 0.3/3;
         })
     }
 

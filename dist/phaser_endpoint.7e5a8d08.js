@@ -371,6 +371,8 @@ function (_Phaser$Scene) {
     _this._option2 = null;
     _this._option3 = null;
     _this._F11 = null;
+    _this._angularVel = 0.03;
+    _this._thrust = 0.2;
     return _this;
   }
 
@@ -403,8 +405,6 @@ function (_Phaser$Scene) {
   }, {
     key: "create",
     value: function create() {
-      var _this2 = this;
-
       // Screen Data
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
@@ -424,7 +424,8 @@ function (_Phaser$Scene) {
       });
       this.matter.world.convertTilemapLayer(collisionLayer); //collisionLayer.setDepth(2);
 
-      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20); //this._F11 = this.input.keyboard.addKey(this.Keyboard.F11);  //Fix
+      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20); //this._player.setInertia(body,10);
+      //this._F11 = this.input.keyboard.addKey(this.Keyboard.F11);  //Fix
 
       this._score = this.add.text(16, 16, this._text, {
         font: "18px monospace",
@@ -448,14 +449,13 @@ function (_Phaser$Scene) {
       var camera = this.cameras.main;
       camera.startFollow(this._player);
       camera.setBounds(0, 0, 2300, 1530); // DEBUG Rules
-
-      this.matter.world.createDebugGraphic();
-      this.matter.world.drawDebug = false;
-      this.input.keyboard.on("keydown_D", function (event) {
-        _this2.matter.world.drawDebug = !_this2.matter.world.drawDebug;
-
-        _this2.matter.world.debugGraphic.clear();
-      }); // Update Damage taken by player 
+      // this.matter.world.createDebugGraphic();
+      // this.matter.world.drawDebug = false;
+      // this.input.keyboard.on("keydown_D", event => {
+      //     this.matter.world.drawDebug = !this.matter.world.drawDebug;
+      //     this.matter.world.debugGraphic.clear();
+      // });
+      // Update Damage taken by player 
 
       var healthvalue = this._health;
       this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
@@ -514,32 +514,36 @@ function (_Phaser$Scene) {
     key: "update",
     value: function update(time, delta) {
       //controls.update(delta);
-      var cursors = this.input.keyboard.createCursorKeys();
+      var cursors = //this.input.keyboard.createCursorKeys();
+      this.input.keyboard.addKeys({
+        up: Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.S,
+        left: Phaser.Input.Keyboard.KeyCodes.A,
+        right: Phaser.Input.Keyboard.KeyCodes.D
+      });
       var _this$sys$game$config2 = this.sys.game.config,
           width = _this$sys$game$config2.width,
-          height = _this$sys$game$config2.height;
-
-      this._player.setVelocity(0); //this._player.velocity.normalize().scale(playerSpeed);
-
+          height = _this$sys$game$config2.height; //this._player.setVelocity(0);
+      //this._player.velocity.normalize().scale(playerSpeed);
 
       this._player.setFrictionAir(0.15);
 
-      this._player.setMass(50);
+      this._player.setMass(100);
 
       this._player.setFixedRotation(); // Forward Motion 
 
 
       if (cursors.up.isDown) {
-        this._player.thrust(0.5);
+        this._player.thrust(this._thrust);
       } else if (cursors.down.isDown) {
-        this._player.thrust(-0.5);
+        this._player.thrust(-this._thrust * 0.8);
       } // Turning Motion
 
 
       if (cursors.left.isDown) {
-        this._player.setAngularVelocity(-0.03);
+        this._player.setAngularVelocity(-this._angularVel);
       } else if (cursors.right.isDown) {
-        this._player.setAngularVelocity(0.03);
+        this._player.setAngularVelocity(this._angularVel);
       } // if(this._F11.isDown)
       // {
       //     /**
@@ -658,6 +662,8 @@ function (_Phaser$Scene) {
   }, {
     key: "phoneHighlight",
     value: function phoneHighlight(option, highlight) {
+      var _this2 = this;
+
       // option.setScale(3).setResolution(5);
       option.setInteractive();
       option.on("pointerover", function () {
@@ -669,6 +675,21 @@ function (_Phaser$Scene) {
       });
       option.on("pointerup", function () {
         console.log("Submission", option._text);
+
+        _this2._phone.setAlpha(0);
+
+        _this2._phonescreen_bg.setAlpha(0);
+
+        _this2._question.setAlpha(0);
+
+        _this2._option1.setAlpha(0);
+
+        _this2._option2.setAlpha(0);
+
+        _this2._option3.setAlpha(0);
+
+        _this2._angularVel = _this2._angularVel + 0.04 / 3;
+        _this2._thrust = _this2._thrust + 0.3 / 3;
       });
     }
   }]);
