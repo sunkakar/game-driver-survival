@@ -359,12 +359,16 @@ function (_Phaser$Scene) {
     _this._text = "Health: 100%";
     _this._health = health;
     _this._score = null;
+    _this._socialscore = null;
     _this._lostGame = false;
     _this._phone = null;
     _this._data = [];
     _this._lastphoneEvent = null;
     _this._phoneEventTimer = null;
     _this._phonescreen_bg = null;
+    _this._option1 = null;
+    _this._option2 = null;
+    _this._option3 = null;
     return _this;
   }
 
@@ -471,13 +475,22 @@ function (_Phaser$Scene) {
         },
         backgroundColor: "#000000"
       }).setDepth(9).setScrollFactor(0).setResolution(10);
+      this._option1 = this.add.text(width * 0.85, height * 0.7, 'Bye').setFontSize(15).setDepth(10).setScrollFactor(0);
+      this._option2 = this.add.text(width * 0.85, height * 0.8, 'I Dont Care').setFontSize(15).setDepth(10).setScrollFactor(0);
+      this._option3 = this.add.text(width * 0.85, height * 0.9, 'Maybe').setFontSize(15).setDepth(10).setScrollFactor(0);
       this._lastphoneEvent = this.time.now;
 
-      this._phone.setVisible(false);
+      this._phone.setAlpha(0);
 
-      this._phonescreen_bg.setVisible(false);
+      this._phonescreen_bg.setAlpha(0);
 
-      this._question.setVisible(false); //let timedEvent = this.time.now;
+      this._question.setAlpha(0);
+
+      this._option1.setAlpha(0);
+
+      this._option2.setAlpha(0);
+
+      this._option3.setAlpha(0); //let timedEvent = this.time.now;
       //console.log(timedEvent);
       //delayedCall(3000, this.onPhoneSubmit, [], this);
 
@@ -487,6 +500,9 @@ function (_Phaser$Scene) {
     value: function update(time, delta) {
       //controls.update(delta);
       var cursors = this.input.keyboard.createCursorKeys();
+      var _this$sys$game$config2 = this.sys.game.config,
+          width = _this$sys$game$config2.width,
+          height = _this$sys$game$config2.height;
 
       this._player.setVelocity(0); //this._player.velocity.normalize().scale(playerSpeed);
 
@@ -525,19 +541,74 @@ function (_Phaser$Scene) {
   }, {
     key: "onPhoneSubmit",
     value: function onPhoneSubmit() {
-      this._phone.setVisible(true);
-
-      this._phonescreen_bg.setVisible(true);
-
-      this._question.setVisible(true);
-
       console.log("Phone Event Triggerrred");
       this._lastphoneEvent = this.time.now;
 
       if (this._phoneEventTimer - 1 > 5) {
+        // Fade In Phone Overlay
+        this.tweens.add({
+          targets: this._phone,
+          alpha: 1,
+          duration: 2000,
+          ease: 'Power2'
+        }, this);
+        this.tweens.add({
+          targets: this._phonescreen_bg,
+          alpha: 1,
+          duration: 2000,
+          ease: 'Power2'
+        }, this);
+        this.tweens.add({
+          targets: this._question,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
+        this.tweens.add({
+          targets: this._option1,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
+        this.tweens.add({
+          targets: this._option2,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
+        this.tweens.add({
+          targets: this._option3,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
         this._phoneEventTimer -= 1;
       } else {
         //Do Nothing
+        // Fade In Phone Overlay
+        this.tweens.add({
+          targets: this._phone,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2'
+        }, this);
+        this.tweens.add({
+          targets: this._phonescreen_bg,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2'
+        }, this);
+        this.tweens.add({
+          targets: this._question,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: -1
+        }, this);
         console.log("Fastest Speed");
       }
     }
@@ -736,7 +807,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51442" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51599" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -12,12 +12,16 @@ export class MinimapScene extends Phaser.Scene{
         this._text = "Health: 100%";
         this._health = health;
         this._score = null;
+        this._socialscore = null;
         this._lostGame = false;
         this._phone = null;
         this._data = [];
         this._lastphoneEvent = null;
         this._phoneEventTimer = null; 
         this._phonescreen_bg = null;
+        this._option1 = null;
+        this._option2 = null;
+        this._option3 = null;
     }
 
     init(msg)
@@ -121,12 +125,20 @@ export class MinimapScene extends Phaser.Scene{
         this._question = this.add.text(width*0.75,height*0.6, "Wanna Hangout?", {
             font: "15px monospace",
             fill: "#ffffff",padding: { x: 15, y: 10 },backgroundColor: "#000000"}).setDepth(9).setScrollFactor(0).setResolution(10);
-        
+        this._option1 = this.add.text(width*0.85,height*0.7, 'Bye').setFontSize(15).setDepth(10).setScrollFactor(0);
+        this._option2 = this.add.text(width*0.85,height*0.8, 'I Dont Care').setFontSize(15).setDepth(10).setScrollFactor(0);
+        this._option3 = this.add.text(width*0.85,height*0.9, 'Maybe').setFontSize(15).setDepth(10).setScrollFactor(0);
+
+            
         this._lastphoneEvent = this.time.now;
 
-        this._phone.setVisible(false);
-        this._phonescreen_bg.setVisible(false);
-        this._question.setVisible(false);
+        this._phone.setAlpha(0);
+        this._phonescreen_bg.setAlpha(0);
+        this._question.setAlpha(0);
+        this._option1.setAlpha(0);
+        this._option2.setAlpha(0);
+        this._option3.setAlpha(0);
+          
 
         
         //let timedEvent = this.time.now;
@@ -143,6 +155,7 @@ export class MinimapScene extends Phaser.Scene{
     {
         //controls.update(delta);
         let cursors = this.input.keyboard.createCursorKeys();
+        const { width, height } = this.sys.game.config;
 
         this._player.setVelocity(0);
         //this._player.velocity.normalize().scale(playerSpeed);
@@ -190,22 +203,31 @@ export class MinimapScene extends Phaser.Scene{
 
     onPhoneSubmit ()
     {
-        this._phone.setVisible(true);
-        this._phonescreen_bg.setVisible(true);
-        this._question.setVisible(true);
-        
         console.log("Phone Event Triggerrred");
 
-            this._lastphoneEvent = this.time.now;
-            if(this._phoneEventTimer - 1 > 5)
-            {
-                this._phoneEventTimer -= 1;
-            }
-            else 
-            {
-                //Do Nothing
-                console.log("Fastest Speed");
-            }
+        this._lastphoneEvent = this.time.now;
+        if(this._phoneEventTimer - 1 > 5)
+        {
+            // Fade In Phone Overlay
+            this.tweens.add({targets: this._phone,alpha: 1,duration: 2000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._phonescreen_bg,alpha: 1,duration: 2000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._question,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+            this.tweens.add({targets: this._option1,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+            this.tweens.add({targets: this._option2,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+            this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+
+
+            this._phoneEventTimer -= 1;
+        }
+        else 
+        {
+            //Do Nothing
+            // Fade In Phone Overlay
+            this.tweens.add({targets: this._phone,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._phonescreen_bg,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._question,alpha: 1,duration: 1000,ease: 'Power2',loop: -1}, this);
+            console.log("Fastest Speed");
+        }
     }
 
     phoneFade() 
