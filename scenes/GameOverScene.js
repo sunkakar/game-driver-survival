@@ -29,7 +29,7 @@ export class GameOverScene extends Phaser.Scene{
 
         let playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
         this.add
-        .text(350, 300 , "Play Again!", {font: "18px monospace", color: "white"}).setShadow(5, 5, "#5588EE", 0, true, true);
+        .text(220, 300 , "Play Again!", {font: "18px monospace", color: "white"}).setShadow(5, 5, "#5588EE", 0, true, true);
         playButton.setScale(3).setResolution(5);
         playButton.setInteractive();
         playButton.on("pointerover", () => {

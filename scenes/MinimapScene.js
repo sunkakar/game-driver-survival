@@ -14,6 +14,7 @@ export class MinimapScene extends Phaser.Scene{
         this._score = null;
         this._lostGame = false;
         this._phone = null;
+        this._data = [];
     }
 
     init(msg){
@@ -32,7 +33,8 @@ export class MinimapScene extends Phaser.Scene{
         this.load.tilemapTiledJSON("map", "./asset/spritesheet/map_updated.json");
 
         this.load.image("phone", "./asset/phone/mobile.png");
-        this.load.image("screen_bg", "./asset/phone/minions.png");
+        this.load.image("screen_bg", "./asset/phone/bg.jpg");
+        this.load.image("screen_bg", "./asset/phone/speech-bubble.png");
     }
 
     create()
@@ -98,7 +100,13 @@ export class MinimapScene extends Phaser.Scene{
 
         // Phone Graphic
         this._phone = this.add.image( width*0.85 , height*0.8 ,"phone").setScale(0.5).setDepth(10).setScrollFactor(0);
-        let screen_bg = this.add.image(width*0.85,height*0.85, 'screen_bg').setScale(0.3).setDepth(8).setScrollFactor(0);
+        let screen_bg = this.add.image(width*0.85,height*0.85, 'screen_bg').setScale(0.9).setDepth(8).setScrollFactor(0);
+        this._question = this.add.text(width*0.75,height*0.6, "What did you eat for breakfast?", {
+            font: "15px monospace",
+            fill: "#000000",padding: { x: 15, y: 10 },backgroundColor: "#ffffff"}).setDepth(9).setScrollFactor(0).setResolution(5);
+        //this._answers = 
+        
+
 
     }
 
