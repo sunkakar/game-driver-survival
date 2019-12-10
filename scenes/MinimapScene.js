@@ -2,7 +2,7 @@ import { ActiveScene } from './ACTIVE_SCENE.js';
 
 
 let controls;
-
+let HighlightBar;
 export class MinimapScene extends Phaser.Scene{
     constructor(player = null, health = 100){
         super({
@@ -46,6 +46,8 @@ export class MinimapScene extends Phaser.Scene{
         this.load.image("phone", "./asset/phone/mobile.png");
         this.load.image("screen_bg", "./asset/phone/bg.jpg");
         this.load.image("screen_bg", "./asset/phone/speech-bubble.png");
+
+        HighlightBar = this.add.graphics({fillStyle: {color: 0xff4f1f}});
     }
 
     create()
@@ -125,10 +127,14 @@ export class MinimapScene extends Phaser.Scene{
         this._question = this.add.text(width*0.75,height*0.6, "Wanna Hangout?", {
             font: "15px monospace",
             fill: "#ffffff",padding: { x: 15, y: 10 },backgroundColor: "#000000"}).setDepth(9).setScrollFactor(0).setResolution(10);
-        this._option1 = this.add.text(width*0.85,height*0.7, 'Bye').setFontSize(15).setDepth(10).setScrollFactor(0);
-        this._option2 = this.add.text(width*0.85,height*0.8, 'I Dont Care').setFontSize(15).setDepth(10).setScrollFactor(0);
-        this._option3 = this.add.text(width*0.85,height*0.9, 'Maybe').setFontSize(15).setDepth(10).setScrollFactor(0);
+        this._option1 = this.add.text(width*0.78,height*0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
+        this._option2 = this.add.text(width*0.78,height*0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
+        this._option3 = this.add.text(width*0.78,height*0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
 
+        
+        let option1_bar = HighlightBar.fillRect(width*0.78,height*0.69, 300 , 30).setAlpha(0).setDepth(10);
+        let option2_bar = HighlightBar.fillRect(width*0.78,height*0.79, 300 , 30).setAlpha(0).setDepth(10);
+        let option3_bar = HighlightBar.fillRect(width*0.78,height*0.89, 300 , 30).setAlpha(0).setDepth(10);
             
         this._lastphoneEvent = this.time.now;
 
@@ -139,6 +145,12 @@ export class MinimapScene extends Phaser.Scene{
         this._option2.setAlpha(0);
         this._option3.setAlpha(0);
           
+
+        //Interactive Setup
+        this.phoneHighlight(this._option1, option1_bar);
+        this.phoneHighlight(this._option2, option2_bar);
+        this.phoneHighlight(this._option3, option3_bar);
+
 
         
         //let timedEvent = this.time.now;
@@ -216,7 +228,6 @@ export class MinimapScene extends Phaser.Scene{
             this.tweens.add({targets: this._option2,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
             this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
 
-
             this._phoneEventTimer -= 1;
         }
         else 
@@ -226,13 +237,29 @@ export class MinimapScene extends Phaser.Scene{
             this.tweens.add({targets: this._phone,alpha: 1,duration: 1000,ease: 'Power2'}, this);
             this.tweens.add({targets: this._phonescreen_bg,alpha: 1,duration: 1000,ease: 'Power2'}, this);
             this.tweens.add({targets: this._question,alpha: 1,duration: 1000,ease: 'Power2',loop: -1}, this);
+            this.tweens.add({targets: this._option1,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+            this.tweens.add({targets: this._option2,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+            this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
             console.log("Fastest Speed");
         }
     }
 
-    phoneFade() 
+    phoneHighlight(option, highlight) 
     {
-        
+        // option.setScale(3).setResolution(5);
+        option.setInteractive();
+        option.on("pointerover", () => {
+            //highlight.setAlpha(1);
+            option.setTint(0xff00ff, 0xffff00, 0x0000ff, 0xff0000);
+        })
+
+        option.on("pointerout", () => {
+            option.setTint("#ffffff", 0);
+        })
+
+        option.on("pointerup", () => {
+            console.log("Submission", option);
+        })
     }
 
 }

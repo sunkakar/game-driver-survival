@@ -338,6 +338,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var controls;
+var HighlightBar;
 
 var MinimapScene =
 /*#__PURE__*/
@@ -392,6 +393,11 @@ function (_Phaser$Scene) {
       this.load.image("phone", "./asset/phone/mobile.png");
       this.load.image("screen_bg", "./asset/phone/bg.jpg");
       this.load.image("screen_bg", "./asset/phone/speech-bubble.png");
+      HighlightBar = this.add.graphics({
+        fillStyle: {
+          color: 0xff4f1f
+        }
+      });
     }
   }, {
     key: "create",
@@ -475,9 +481,12 @@ function (_Phaser$Scene) {
         },
         backgroundColor: "#000000"
       }).setDepth(9).setScrollFactor(0).setResolution(10);
-      this._option1 = this.add.text(width * 0.85, height * 0.7, 'Bye').setFontSize(15).setDepth(10).setScrollFactor(0);
-      this._option2 = this.add.text(width * 0.85, height * 0.8, 'I Dont Care').setFontSize(15).setDepth(10).setScrollFactor(0);
-      this._option3 = this.add.text(width * 0.85, height * 0.9, 'Maybe').setFontSize(15).setDepth(10).setScrollFactor(0);
+      this._option1 = this.add.text(width * 0.78, height * 0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
+      this._option2 = this.add.text(width * 0.78, height * 0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
+      this._option3 = this.add.text(width * 0.78, height * 0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
+      var option1_bar = HighlightBar.fillRect(width * 0.78, height * 0.69, 300, 30).setAlpha(0).setDepth(10);
+      var option2_bar = HighlightBar.fillRect(width * 0.78, height * 0.79, 300, 30).setAlpha(0).setDepth(10);
+      var option3_bar = HighlightBar.fillRect(width * 0.78, height * 0.89, 300, 30).setAlpha(0).setDepth(10);
       this._lastphoneEvent = this.time.now;
 
       this._phone.setAlpha(0);
@@ -490,10 +499,14 @@ function (_Phaser$Scene) {
 
       this._option2.setAlpha(0);
 
-      this._option3.setAlpha(0); //let timedEvent = this.time.now;
+      this._option3.setAlpha(0); //Interactive Setup
+
+
+      this.phoneHighlight(this._option1, option1_bar);
+      this.phoneHighlight(this._option2, option2_bar);
+      this.phoneHighlight(this._option3, option3_bar); //let timedEvent = this.time.now;
       //console.log(timedEvent);
       //delayedCall(3000, this.onPhoneSubmit, [], this);
-
     }
   }, {
     key: "update",
@@ -609,12 +622,46 @@ function (_Phaser$Scene) {
           ease: 'Power2',
           loop: -1
         }, this);
+        this.tweens.add({
+          targets: this._option1,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
+        this.tweens.add({
+          targets: this._option2,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
+        this.tweens.add({
+          targets: this._option3,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2',
+          loop: 1
+        }, this);
         console.log("Fastest Speed");
       }
     }
   }, {
-    key: "phoneFade",
-    value: function phoneFade() {}
+    key: "phoneHighlight",
+    value: function phoneHighlight(option, highlight) {
+      // option.setScale(3).setResolution(5);
+      option.setInteractive();
+      option.on("pointerover", function () {
+        //highlight.setAlpha(1);
+        option.setTint(0xff00ff, 0xffff00, 0x0000ff, 0xff0000);
+      });
+      option.on("pointerout", function () {
+        option.setTint("#ffffff", 0);
+      });
+      option.on("pointerup", function () {
+        console.log("Submission", option);
+      });
+    }
   }]);
 
   return MinimapScene;
