@@ -197,13 +197,15 @@ export class MinimapScene extends Phaser.Scene{
         {
             this._player.setAngularVelocity(0.03);
         }        
-        if(this._F11.isDown)
-        {
-            /**
-             * this._map.height = window.screen.height;
-             * this._map.width = window.screen.width;
-             */
-        }
+        // if(this._F11.isDown)
+        // {
+        //     /**
+        //      * this._map.height = window.screen.height;
+        //      * this._map.width = window.screen.width;
+        //      */
+        // }
+
+
         // Timer Setup for Phone Events
         if(this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) > 0)
         {
@@ -265,7 +267,7 @@ export class MinimapScene extends Phaser.Scene{
         })
 
         option.on("pointerup", () => {
-            console.log("Submission", option);
+            console.log("Submission", option._text);
         })
     }
 

@@ -540,13 +540,13 @@ function (_Phaser$Scene) {
         this._player.setAngularVelocity(-0.03);
       } else if (cursors.right.isDown) {
         this._player.setAngularVelocity(0.03);
-      }
-
-      if (this._F11.isDown) {}
-      /**
-       * this._map.height = window.screen.height;
-       * this._map.width = window.screen.width;
-       */
+      } // if(this._F11.isDown)
+      // {
+      //     /**
+      //      * this._map.height = window.screen.height;
+      //      * this._map.width = window.screen.width;
+      //      */
+      // }
       // Timer Setup for Phone Events
 
 
@@ -668,7 +668,7 @@ function (_Phaser$Scene) {
         option.setTint("#ffffff", 0);
       });
       option.on("pointerup", function () {
-        console.log("Submission", option);
+        console.log("Submission", option._text);
       });
     }
   }]);
@@ -835,7 +835,7 @@ var game = new Phaser.Game(config); // function preload() {
 // function update(time, delta) {
 //   // Runs once per frame for the duration of the scene
 // }
-},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -863,7 +863,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51599" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53579" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -1039,5 +1039,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","phaser_endpoint.js"], null)
+},{}]},{},["node_modules/parcel/src/builtins/hmr-runtime.js","phaser_endpoint.js"], null)
 //# sourceMappingURL=/phaser_endpoint.7e5a8d08.js.map
