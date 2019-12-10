@@ -1,6 +1,6 @@
 class contact
 {
-    constructor(name = '\0', message = '\0', timeLeft = 0, state = -1, relationship = Math.floor(Math.random() * Math.floor(3)), threshold = ( 40 - (Math.floor(Math.random() * Math.floor(20)))) )
+    constructor(name = '\0', message = '\0', timeLeft = 0, state = -1, relationship = Math.floor(Math.random() * Math.floor(3)), threshold = ( 40 - (Math.floor(Math.random() * Math.floor(20)))), OpA = '\0', OpB = '\0', OpC = '\0')
     {
         /**
          *  States
@@ -14,7 +14,11 @@ class contact
         this._duration = timeleft;
         this._state = state;
         this._relationship = relationship//  2- crush 1 - friend 2 - relative
-        this._threshold = threshold;// start 100 -
+        this._threshold = threshold;// start 100  with stand def of 20
+        this._Options = [];
+        this._Options.push(OpA);
+        this._Options.push(OpB);
+        this._Options.push(OpC);
     }
     //getters
     get name()//name of sender
@@ -67,6 +71,14 @@ class contact
         this._threshold = th;
     } 
     //method
+    getOp(i)
+    {
+        return this._Options[i];
+    }
+    setOp(i, message)
+    {
+        this._Options[i] = message;
+    }
     roll(social)//crystal ball, will we last? 
     {
         if(this._threshold > 0)
@@ -84,7 +96,7 @@ class contact
         if(this.roll() == -1)
         {
             this.state = -1;
-            //this._message = 'L8ter!';//srry somenthing came up! :( , BYE!, :$, Adieu
+            //this._message = 'L8ter!';'srry somenthing came up! :( '; 'BYE!'; ':$'; 'Adieu'
         }
 
         return this._message;
