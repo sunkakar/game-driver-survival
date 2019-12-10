@@ -299,9 +299,8 @@ function (_Phaser$Scene) {
       playButton.on("pointerup", function () {
         console.log("Start Game");
 
-        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap");
-      }); //this.scene.start( ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap" ); //MOVE
-      //playButton.on()
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap");
+      });
     }
   }]);
 
@@ -337,17 +336,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+var controls;
+
 var MinimapScene =
 /*#__PURE__*/
 function (_Phaser$Scene) {
   _inherits(MinimapScene, _Phaser$Scene);
 
   function MinimapScene() {
+    var _this;
+
+    var player = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
     _classCallCheck(this, MinimapScene);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(MinimapScene).call(this, {
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MinimapScene).call(this, {
       key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap
     }));
+    _this._player = player;
+    return _this;
   }
 
   _createClass(MinimapScene, [{
@@ -361,8 +368,9 @@ function (_Phaser$Scene) {
       this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
       //this.load.atlas('base_map', './asset/spritesheet/tiles_spritesheet.png', 'asset/spritesheet/tiles_spritesheet.json');
 
-      this.load.image("tiles", "./asset/spritesheet/roads2W.png");
-      this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
+      this.load.image("roads2W", "./asset/spritesheet/roads2W.png");
+      this.load.image("RPGTileset", "./asset/spritesheet/TilesetPyxel.png");
+      this.load.tilemapTiledJSON("map", "./asset/spritesheet/map_updated.json");
     }
   }, {
     key: "create",
@@ -374,15 +382,15 @@ function (_Phaser$Scene) {
       background.displayHeight = 600;
       var map = this.make.tilemap({
         key: "map"
-      }); //const tileset1 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
-      //const tileset2 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
-      //const layer1 = map.createStaticLayer("Map", tileset, 0, 0);
-      //const layer2 = map.createStaticLayer("Trees", tileset, 0, 0);
-      //const layer3 = map.createStaticLayer("Bridge", tileset, 0, 0);
-      // Phaser supports multiple cameras, but you can access the default camera like this:
+      });
+      var tileset = map.addTilesetImage("roads2W", "roads2W");
+      var tileset2 = map.addTilesetImage("RPG TileSet", "RPGTileset"); //const tileset = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
 
-      var camera = this.cameras.main; // Set up the arrows to control the camera
+      var layer1 = map.createStaticLayer("Map", tileset, 0, 0).setScale(3);
+      var layer2 = map.createStaticLayer("Trees", tileset2, 0, 0).setScale(3);
+      var layer3 = map.createStaticLayer("Bridge", tileset2, 0, 0).setScale(3); // Phaser supports multiple cameras, but you can access the default camera like this:
 
+      var camera = this.cameras.main;
       var cursors = this.input.keyboard.createCursorKeys();
       controls = new Phaser.Cameras.Controls.FixedKeyControl({
         camera: camera,
@@ -390,10 +398,11 @@ function (_Phaser$Scene) {
         right: cursors.right,
         up: cursors.up,
         down: cursors.down,
-        speed: 0.5
+        speed: 0.7
       }); // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
 
-      camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels); // Help text that has a "fixed" position on the screen
+      camera.setBounds(0, 0, 2300, 1530); //console.log(map.widthInPixels*5, map.heightInPixels*5);
+      // Help text that has a "fixed" position on the screen
 
       this.add.text(16, 16, "Arrow keys to scroll", {
         font: "18px monospace",
@@ -404,11 +413,14 @@ function (_Phaser$Scene) {
         },
         backgroundColor: "#000000"
       }).setScrollFactor(0);
+      this._player = this.physics.add.sprite(300, 300, 'car').setScale(1 / 16);
     }
   }, {
     key: "update",
     value: function update(time, delta) {
       controls.update(delta);
+
+      this._player.body.setVelocity(0);
     }
   }]);
 
@@ -416,7 +428,7 @@ function (_Phaser$Scene) {
 }(Phaser.Scene);
 
 exports.MinimapScene = MinimapScene;
-},{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"phaser.js":[function(require,module,exports) {
+},{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"phaser_endpoint.js":[function(require,module,exports) {
 "use strict";
 
 var _LoadScene = require("./scenes/LoadScene");
@@ -434,15 +446,18 @@ var config = {
   // Canvas height in pixels
   backgroundColor: '#f09020',
   parent: "game-container",
-  // ID of the DOM element to add the canvas to
-  // scene: {
-  //   preload: preload,
-  //   create: create,
-  //   update: update
-  // }
   scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene],
   render: {
     pixelArt: true
+  },
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: {
+        y: 0
+      } // Top down game, so no gravity
+
+    }
   }
 };
 var game = new Phaser.Game(config); // function preload() {
@@ -683,5 +698,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","phaser.js"], null)
-//# sourceMappingURL=/phaser.afe288af.js.map
+},{}]},{},["../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","phaser_endpoint.js"], null)
+//# sourceMappingURL=/phaser_endpoint.7e5a8d08.js.map
