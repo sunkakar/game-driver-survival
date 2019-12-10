@@ -22,6 +22,7 @@ export class MinimapScene extends Phaser.Scene{
         this._option1 = null;
         this._option2 = null;
         this._option3 = null;
+        this._F11 = null;
     }
 
     init(msg)
@@ -70,7 +71,7 @@ export class MinimapScene extends Phaser.Scene{
         //collisionLayer.setDepth(2);
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
         
-
+        this._F11 = this.input.keyboard.addKey(Phaser.Keyboard.F11);
         this._score = this.add.text(16, 16, this._text, {
                 font: "18px monospace",
                 fill: "#ffffff",
@@ -184,7 +185,13 @@ export class MinimapScene extends Phaser.Scene{
         {
             this._player.setAngularVelocity(0.03);
         }        
-
+        if(this._F11.isDown)
+        {
+            /**
+             * this._map.height = window.screen.height;
+             * this._map.width = window.screen.width;
+             */
+        }
         // Timer Setup for Phone Events
         if(this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) > 0)
         {
