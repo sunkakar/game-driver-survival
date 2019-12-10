@@ -33,6 +33,9 @@ export class LoadScene extends Phaser.Scene{
             this.load.image('menu_logo', './asset/menu/game-logo.png');
             this.load.image('menu_bg', './asset/menu/menu-bg.png');
 
+            //this.load.image("tiles", "../dist/asset/spritesheet/roads2W.png");
+            //this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
+
             //this.load.audio()
         }
 

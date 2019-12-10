@@ -198,7 +198,9 @@ function (_Phaser$Scene) {
         });
         this.load.image('car', './asset/png/car/Car_1_Main_Positions/Car_1_01.png');
         this.load.image('menu_logo', './asset/menu/game-logo.png');
-        this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.audio()
+        this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.image("tiles", "../dist/asset/spritesheet/roads2W.png");
+        //this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
+        //this.load.audio()
       }
 
       this.load.on("progress", function (percentage) {
@@ -271,6 +273,8 @@ function (_Phaser$Scene) {
   }, {
     key: "create",
     value: function create() {
+      var _this = this;
+
       // Height and Width for screen
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
@@ -293,9 +297,10 @@ function (_Phaser$Scene) {
         carmouse.setVisible(false);
       });
       playButton.on("pointerup", function () {
-        console.log("Start Game"); //this.scene.start( ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap" );
-      });
-      this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap"); //MOVE
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap");
+      }); //this.scene.start( ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap" ); //MOVE
       //playButton.on()
     }
   }]);
@@ -356,21 +361,54 @@ function (_Phaser$Scene) {
       this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
       //this.load.atlas('base_map', './asset/spritesheet/tiles_spritesheet.png', 'asset/spritesheet/tiles_spritesheet.json');
 
-      this.load.image("tiles", "dist/asset/spritesheet/roads2W.png");
-      this.load.tilemapTiledJSON("map", "dist/asset/spritesheet/tile_map.json");
+      this.load.image("tiles", "./asset/spritesheet/roads2W.png");
+      this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
     }
   }, {
     key: "create",
     value: function create() {
       //this.scene.start( ActiveScene.AvailableScenes.Menu, "Here!" )
-      //const background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0) //this.add.image(0,0, "menu_bg").setOrigin(0);
-      //background.displayWidth = 800;
-      //background.displayHeight = 600;
+      var background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0); //this.add.image(0,0, "menu_bg").setOrigin(0);
+
+      background.displayWidth = 800;
+      background.displayHeight = 600;
       var map = this.make.tilemap({
         key: "map"
-      });
-      var tileset1 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
-      var tileset2 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
+      }); //const tileset1 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
+      //const tileset2 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
+
+      var layer1 = map.createStaticLayer("Map", tileset, 0, 0);
+      var layer2 = map.createStaticLayer("Trees", tileset, 0, 0);
+      var layer3 = map.createStaticLayer("Bridge", tileset, 0, 0); // Phaser supports multiple cameras, but you can access the default camera like this:
+
+      var camera = this.cameras.main; // Set up the arrows to control the camera
+
+      var cursors = this.input.keyboard.createCursorKeys();
+      controls = new Phaser.Cameras.Controls.FixedKeyControl({
+        camera: camera,
+        left: cursors.left,
+        right: cursors.right,
+        up: cursors.up,
+        down: cursors.down,
+        speed: 0.5
+      }); // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
+
+      camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels); // Help text that has a "fixed" position on the screen
+
+      this.add.text(16, 16, "Arrow keys to scroll", {
+        font: "18px monospace",
+        fill: "#ffffff",
+        padding: {
+          x: 20,
+          y: 10
+        },
+        backgroundColor: "#000000"
+      }).setScrollFactor(0);
+    }
+  }, {
+    key: "update",
+    value: function update(time, delta) {
+      controls.update(delta);
     }
   }]);
 
@@ -394,7 +432,7 @@ var config = {
   // Canvas width in pixels
   height: 600,
   // Canvas height in pixels
-  backgroundColor: '#fffff0',
+  backgroundColor: '#f09020',
   parent: "game-container",
   // ID of the DOM element to add the canvas to
   // scene: {
@@ -469,7 +507,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60389" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54899" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

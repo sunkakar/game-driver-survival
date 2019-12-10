@@ -42,10 +42,10 @@ export class MenuScene extends Phaser.Scene{
 
         playButton.on("pointerup", () => {
             console.log("Start Game");
-            //this.scene.start( ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap" );
+            this.scene.start( ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap" );
         })
 
-        this.scene.start( ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap" ); //MOVE
+        //this.scene.start( ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap" ); //MOVE
         //playButton.on()
     }
 }
