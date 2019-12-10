@@ -1,6 +1,25 @@
 # game-driver-survival
 HTML5 GAME! 
 
+## Phaser DOCS
+
+#### State Transition in Phaser.js
+```
+[Start] -> init() -> preload() -> create() -> update()
+```
+
+#### Phaser Plugins 
+```
+this.events;  //  Event emitter
+this.cameras; //  2D camera
+this.add;     //  Game Object Factory
+this.make;    //  Game Object Creator
+this.scene;   //  Scene Manager
+this.children;        //  Display List
+this.sys.updateList   //  Update List
+```
+
+
 ## Live https://sunkakar.github.io/game-driver-survival/
 
 ## Link to Andy's Tile Based World Example  
@@ -23,4 +42,14 @@ window.onresize = resizeCanvas;
 // So we fire it manually...
 resizeCanvas();
 
+```
+
+### Get Music From 
+```
+
+https://www.audioblocks.com/collections/video-game-music
+
+https://kubigames.itch.io/road-tiles
+
+https://midnite6.itch.io/classic-rpg-tileset-16x16?download
 ```

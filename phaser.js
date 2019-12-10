@@ -1,11 +1,12 @@
-import { LoadScene } from './scenes/LoadScene.js';
-import { MenuScene } from './scenes/MenuScene.js';
-import { MinimapScene } from './scenes/MinimapScene.js';
+import { LoadScene } from './scenes/LoadScene';
+import { MenuScene } from './scenes/MenuScene';
+import { MinimapScene } from './scenes/MinimapScene';
 
 const config = {
     type: Phaser.AUTO, // Which renderer to use
     width: 800, // Canvas width in pixels
     height: 600, // Canvas height in pixels
+    backgroundColor: '#fffff0',
     parent: "game-container", // ID of the DOM element to add the canvas to
     // scene: {
     //   preload: preload,
@@ -16,11 +17,14 @@ const config = {
       LoadScene, 
       MenuScene,
       MinimapScene
-    ]
+    ],
+    render:{
+      pixelArt: true
+    }
 
   };
   
-  // const game = new Phaser.Game(config);
+  const game = new Phaser.Game(config);
   
   // function preload() {
   //   // Runs once, loads up assets like images and audio

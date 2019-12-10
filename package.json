@@ -2,7 +2,7 @@
   "name": "game-driver-survival",
   "version": "1.0.0",
   "description": "HTML5 GAME!",
-  "main": "game.js",
+  "main": "phaser.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

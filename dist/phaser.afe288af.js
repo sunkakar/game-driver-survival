@@ -160,6 +160,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+// Load Scene
+/// Loads assets and Transfers over control to the Menu Scene
 var LoadScene =
 /*#__PURE__*/
 function (_Phaser$Scene) {
@@ -180,12 +182,34 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "preload",
-    value: function preload() {}
+    value: function preload() {
+      var _this = this;
+
+      var loadBar = this.add.graphics({
+        fillStyle: {
+          color: 0xffffff
+        }
+      });
+
+      for (var i = 0; i < 100; i++) {
+        this.load.spritesheet("grass_tiles", "../asset/spritesheet/grass_ss.png", {
+          frameHeight: 512,
+          frameWidth: 512
+        });
+        this.load.image('car', './asset/png/car/Car_1_Main_Positions/Car_1_01.png');
+        this.load.image('menu_logo', './asset/menu/game-logo.png');
+        this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.audio()
+      }
+
+      this.load.on("progress", function (percentage) {
+        loadBar.fillRect(0, _this.game.renderer.height / 2, _this.game.renderer.width * percentage, 50);
+      });
+    }
   }, {
     key: "create",
     value: function create() {
       //this.scene.add(ActiveScene.AvailableScenes.Menu, MenuScene, false)
-      this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu, "Here!");
+      this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu, "Load -> Menu");
     }
   }]);
 
@@ -221,6 +245,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+// Menu Scene
+/// Displays the Menu and shows options
 var MenuScene =
 /*#__PURE__*/
 function (_Phaser$Scene) {
@@ -244,7 +270,33 @@ function (_Phaser$Scene) {
     value: function preload() {}
   }, {
     key: "create",
-    value: function create() {//this.scene.start( ActiveScene.AvailableScenes.Menu, "Here!" )
+    value: function create() {
+      // Height and Width for screen
+      var _this$sys$game$config = this.sys.game.config,
+          width = _this$sys$game$config.width,
+          height = _this$sys$game$config.height;
+      var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
+      logo.setScale(2);
+      var carmouse = this.add.sprite(300, 300, 'car');
+      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false);
+      var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
+      this.add.text(350, 300, "Play", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      playButton.setScale(3).setResolution(5);
+      playButton.setInteractive();
+      playButton.on("pointerover", function () {
+        carmouse.setVisible(true);
+      });
+      playButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      playButton.on("pointerup", function () {
+        console.log("Start Game"); //this.scene.start( ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap" );
+      });
+      this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Manu -> Minimap"); //MOVE
+      //playButton.on()
     }
   }]);
 
@@ -289,7 +341,7 @@ function (_Phaser$Scene) {
     _classCallCheck(this, MinimapScene);
 
     return _possibleConstructorReturn(this, _getPrototypeOf(MinimapScene).call(this, {
-      key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu
+      key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap
     }));
   }
 
@@ -300,10 +352,25 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "preload",
-    value: function preload() {}
+    value: function preload() {
+      this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
+      //this.load.atlas('base_map', './asset/spritesheet/tiles_spritesheet.png', 'asset/spritesheet/tiles_spritesheet.json');
+
+      this.load.image("tiles", "dist/asset/spritesheet/roads2W.png");
+      this.load.tilemapTiledJSON("map", "dist/asset/spritesheet/tile_map.json");
+    }
   }, {
     key: "create",
-    value: function create() {//this.scene.start( ActiveScene.AvailableScenes.Menu, "Here!" )
+    value: function create() {
+      //this.scene.start( ActiveScene.AvailableScenes.Menu, "Here!" )
+      //const background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0) //this.add.image(0,0, "menu_bg").setOrigin(0);
+      //background.displayWidth = 800;
+      //background.displayHeight = 600;
+      var map = this.make.tilemap({
+        key: "map"
+      });
+      var tileset1 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
+      var tileset2 = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
     }
   }]);
 
@@ -314,11 +381,11 @@ exports.MinimapScene = MinimapScene;
 },{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"phaser.js":[function(require,module,exports) {
 "use strict";
 
-var _LoadScene = require("./scenes/LoadScene.js");
+var _LoadScene = require("./scenes/LoadScene");
 
-var _MenuScene = require("./scenes/MenuScene.js");
+var _MenuScene = require("./scenes/MenuScene");
 
-var _MinimapScene = require("./scenes/MinimapScene.js");
+var _MinimapScene = require("./scenes/MinimapScene");
 
 var config = {
   type: Phaser.AUTO,
@@ -327,6 +394,7 @@ var config = {
   // Canvas width in pixels
   height: 600,
   // Canvas height in pixels
+  backgroundColor: '#fffff0',
   parent: "game-container",
   // ID of the DOM element to add the canvas to
   // scene: {
@@ -334,9 +402,12 @@ var config = {
   //   create: create,
   //   update: update
   // }
-  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene]
-}; // const game = new Phaser.Game(config);
-// function preload() {
+  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene],
+  render: {
+    pixelArt: true
+  }
+};
+var game = new Phaser.Game(config); // function preload() {
 //   // Runs once, loads up assets like images and audio
 //   this.load.image("grass", "./asset/png/tile/Background_Tiles/Grass_Tile.png");
 //   //this.load.image("grass-tiles", "../spritesheet/grass_ss.png");
@@ -370,7 +441,7 @@ var config = {
 // function update(time, delta) {
 //   // Runs once per frame for the duration of the scene
 // }
-},{"./scenes/LoadScene.js":"scenes/LoadScene.js","./scenes/MenuScene.js":"scenes/MenuScene.js","./scenes/MinimapScene.js":"scenes/MinimapScene.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -398,7 +469,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53107" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60389" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
