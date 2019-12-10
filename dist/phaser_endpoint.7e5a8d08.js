@@ -375,36 +375,28 @@ function (_Phaser$Scene) {
   }, {
     key: "create",
     value: function create() {
-      //this.scene.start( ActiveScene.AvailableScenes.Menu, "Here!" )
-      var background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0); //this.add.image(0,0, "menu_bg").setOrigin(0);
-
-      background.displayWidth = 800;
-      background.displayHeight = 600;
+      // Map Setup
       var map = this.make.tilemap({
         key: "map"
       });
       var tileset = map.addTilesetImage("roads2W", "roads2W");
-      var tileset2 = map.addTilesetImage("RPG TileSet", "RPGTileset"); //const tileset = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
+      var tileset2 = map.addTilesetImage("RPG TileSet", "RPGTileset"); // Map rendered based on Layers 
 
-      var layer1 = map.createStaticLayer("Map", tileset, 0, 0).setScale(3);
-      var layer2 = map.createStaticLayer("Trees", tileset2, 0, 0).setScale(3);
-      var layer3 = map.createStaticLayer("Bridge", tileset2, 0, 0).setScale(3); // Phaser supports multiple cameras, but you can access the default camera like this:
+      var baseLayer = map.createStaticLayer("Map", tileset, 0, 0).setScale(3);
+      var collisionLayer = map.createStaticLayer("Trees", tileset2, 0, 0).setScale(3);
+      var layer3 = map.createStaticLayer("Bridge", tileset2, 0, 0).setScale(3); //collisionLayer.setCollisionByProperty({ collision: true });
+      //collisionLayer.setDepth(2);
 
-      var camera = this.cameras.main;
-      var cursors = this.input.keyboard.createCursorKeys();
-      controls = new Phaser.Cameras.Controls.FixedKeyControl({
-        camera: camera,
-        left: cursors.left,
-        right: cursors.right,
-        up: cursors.up,
-        down: cursors.down,
-        speed: 0.7
-      }); // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
+      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20);
 
-      camera.setBounds(0, 0, 2300, 1530); //console.log(map.widthInPixels*5, map.heightInPixels*5);
-      // Help text that has a "fixed" position on the screen
+      this._player.setCollidesWith(collisionLayer.setCollisionByProperty({
+        collision: true
+      })); //this._player.body.rotate = 90;
+      //this._player.setFixedRotation(90);
+      //this.physics.add.collider(this._player, collisionLayer);
 
-      this.add.text(16, 16, "Arrow keys to scroll", {
+
+      this.add.text(16, 16, "Get to your Destinations!", {
         font: "18px monospace",
         fill: "#ffffff",
         padding: {
@@ -413,14 +405,37 @@ function (_Phaser$Scene) {
         },
         backgroundColor: "#000000"
       }).setScrollFactor(0);
-      this._player = this.physics.add.sprite(300, 300, 'car').setScale(1 / 16);
+      var camera = this.cameras.main;
+      camera.startFollow(this._player);
+      camera.setBounds(0, 0, 2300, 1530);
     }
   }, {
     key: "update",
     value: function update(time, delta) {
-      controls.update(delta);
+      //controls.update(delta);
+      var cursors = this.input.keyboard.createCursorKeys();
+      var playerSpeed = 200;
 
-      this._player.body.setVelocity(0);
+      this._player.setVelocity(0); //this._player.velocity.normalize().scale(playerSpeed);
+
+
+      this._player.setFrictionAir(0.15);
+
+      this._player.setMass(50);
+
+      this._player.setFixedRotation();
+
+      if (cursors.left.isDown) {
+        this._player.setAngularVelocity(-0.03);
+      } else if (cursors.right.isDown) {
+        this._player.setAngularVelocity(0.03);
+      }
+
+      if (cursors.up.isDown) {
+        this._player.thrust(0.5);
+      } else if (cursors.down.isDown) {
+        this._player.thrust(-0.5);
+      }
     }
   }]);
 
@@ -451,11 +466,12 @@ var config = {
     pixelArt: true
   },
   physics: {
-    default: "arcade",
-    arcade: {
+    default: "matter",
+    matter: {
       gravity: {
+        x: 0,
         y: 0
-      } // Top down game, so no gravity
+      } // 2D Game does not need Gravity
 
     }
   }

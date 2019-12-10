@@ -17,9 +17,9 @@ const config = {
       pixelArt: true
     },
     physics: {
-      default: "arcade",
-      arcade: {
-        gravity: { y: 0 } // Top down game, so no gravity
+      default: "matter",
+      matter: {
+        gravity: { x: 0, y: 0 } // 2D Game does not need Gravity
       }
     }
   };
