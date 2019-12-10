@@ -26,6 +26,7 @@ export class MinimapScene extends Phaser.Scene{
         this._F11 = null;
         this._angularVel = 0.03;
         this._thrust = 0.25;
+        this._solved = 0;
     }
 
     init(msg)
@@ -113,7 +114,7 @@ export class MinimapScene extends Phaser.Scene{
         let healthvalue = this._health;
         this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
             healthvalue = healthvalue - Math.floor(Math.random()*(8)+1);
-            if(healthvalue > 0)
+            if(healthvalue > 0 && this.scene._socialscorevalue > 0 )
             {
                 this.scene._text = "Health: " + healthvalue + "%";
                 this.scene._score.setText(this.scene._text);    
@@ -215,12 +216,28 @@ export class MinimapScene extends Phaser.Scene{
         // Timer Setup for Phone Events
         if(this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) > 0)
         {
-            this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀");
-            
+            let i = this._solved;
+            console.log(i);
+            switch(i)
+            {
+                case 0:  this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀"); break;
+                case 1:  this.onPhoneSubmit("Wanna Go Out?", "With U?😂" , "💩" , "Yes!", "Yes!"); break;
+                case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break;
+                default: i = 1;
+            }
+            this._solved = i+1;
+
         }
         else
         {
             //Nothing
+        }
+
+
+        // Lose if Score too low 
+        if(this._socialscorevalue <= 0)
+        {
+            this.endGame();
         }
 
     }
@@ -297,7 +314,7 @@ export class MinimapScene extends Phaser.Scene{
 
             if(this._correct_o !== option._text)
             {
-                this._socialscorevalue -= 1.5; 
+                this._socialscorevalue -= 5; 
                 this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10");    
             }
         })
