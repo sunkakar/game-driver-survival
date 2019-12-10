@@ -11,7 +11,7 @@ export class MenuScene extends Phaser.Scene{
     }
 
     init(msg){
-        console.log("Menu: ",msg);
+        console.log("Menu: " , msg);
     }
 
     preload(){

@@ -223,7 +223,7 @@ export class MinimapScene extends Phaser.Scene{
                 case 0:  this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀"); break;
                 case 1:  this.onPhoneSubmit("Wanna Go Out?", "With U?😂" , "💩" , "Yes!", "Yes!"); break;
                 case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break;
-                default: i = 1;
+                default: i = 0;
             }
             this._solved = i+1;
 
