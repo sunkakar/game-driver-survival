@@ -370,6 +370,7 @@ function (_Phaser$Scene) {
     _this._option1 = null;
     _this._option2 = null;
     _this._option3 = null;
+    _this._F11 = null;
     return _this;
   }
 
@@ -424,6 +425,7 @@ function (_Phaser$Scene) {
       this.matter.world.convertTilemapLayer(collisionLayer); //collisionLayer.setDepth(2);
 
       this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20);
+      this._F11 = this.input.keyboard.addKey(Phaser.Keyboard.F11);
       this._score = this.add.text(16, 16, this._text, {
         font: "18px monospace",
         fill: "#ffffff",
@@ -538,7 +540,14 @@ function (_Phaser$Scene) {
         this._player.setAngularVelocity(-0.03);
       } else if (cursors.right.isDown) {
         this._player.setAngularVelocity(0.03);
-      } // Timer Setup for Phone Events
+      }
+
+      if (this._F11.isDown) {}
+      /**
+       * this._map.height = window.screen.height;
+       * this._map.width = window.screen.width;
+       */
+      // Timer Setup for Phone Events
 
 
       if (this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000) > 0) {
