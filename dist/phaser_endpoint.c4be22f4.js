@@ -11,4 +11,4 @@ parcelRequire=function(e,r,t,n){var i,o="function"==typeof parcelRequire&&parcel
 },{"./ACTIVE_SCENE.js":"ug2O"}],"OB2H":[function(require,module,exports) {
 "use strict";var e=require("./scenes/LoadScene"),r=require("./scenes/MenuScene"),n=require("./scenes/MinimapScene"),a=require("./scenes/GameOverScene"),c={type:Phaser.AUTO,width:800,height:600,backgroundColor:"#f09020",parent:"game-container",scene:[e.LoadScene,r.MenuScene,n.MinimapScene,a.GameOverScene],render:{pixelArt:!0},physics:{default:"matter",matter:{gravity:{x:0,y:0}}}},i=new Phaser.Game(c);
 },{"./scenes/LoadScene":"FUff","./scenes/MenuScene":"JXnn","./scenes/MinimapScene":"Tb4I","./scenes/GameOverScene":"x772"}]},{},["OB2H"], null)
-//# sourceMappingURL=phaser_endpoint.c4be22f4.js.map
+//# sourceMappingURL=/game-driver-survival/phaser_endpoint.c4be22f4.js.map
