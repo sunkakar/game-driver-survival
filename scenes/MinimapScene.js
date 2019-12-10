@@ -13,6 +13,7 @@ export class MinimapScene extends Phaser.Scene{
         this._health = health;
         this._score = null;
         this._socialscore = null;
+        this._socialscorevalue = 10;
         this._lostGame = false;
         this._phone = null;
         this._data = [];
@@ -24,7 +25,7 @@ export class MinimapScene extends Phaser.Scene{
         this._option3 = null;
         this._F11 = null;
         this._angularVel = 0.03;
-        this._thrust = 0.2;
+        this._thrust = 0.25;
     }
 
     init(msg)
@@ -74,6 +75,7 @@ export class MinimapScene extends Phaser.Scene{
 
         //collisionLayer.setDepth(2);
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
+        this._player.thrust(0.1);
         //this._player.setInertia(body,10);
         
         //this._F11 = this.input.keyboard.addKey(this.Keyboard.F11);  //Fix
@@ -81,15 +83,15 @@ export class MinimapScene extends Phaser.Scene{
                 font: "18px monospace",
                 fill: "#ffffff",
                 padding: { x: 20, y: 10 },
-                backgroundColor: "#000000"
+                backgroundColor: "#050505"
             })
             .setScrollFactor(0);
 
-        let socialscore = this.add.text(16, 60, "Social Score: 10/10", {
+        this._socialscore = this.add.text(16, 60, "Social Score: 10/10", {
                 font: "18px monospace",
                 fill: "#ffffff",
                 padding: { x: 20, y: 10 },
-                backgroundColor: "#000000"
+                backgroundColor: "#050505"
             })
             .setScrollFactor(0);
         
@@ -130,7 +132,7 @@ export class MinimapScene extends Phaser.Scene{
         this._phonescreen_bg = this.add.image(width*0.85,height*0.85, 'screen_bg').setScale(0.9).setDepth(8).setScrollFactor(0);
         this._question = this.add.text(width*0.75,height*0.6, "Wanna Hangout?", {
             font: "15px monospace",
-            fill: "#ffffff",padding: { x: 15, y: 10 },backgroundColor: "#000000"}).setDepth(9).setScrollFactor(0).setResolution(10);
+            fill: "#ffffff",padding: { x: 15, y: 10 },backgroundColor: "#000000"}).setDepth(11).setScrollFactor(0).setResolution(10);
         this._option1 = this.add.text(width*0.78,height*0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
         this._option2 = this.add.text(width*0.78,height*0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
         this._option3 = this.add.text(width*0.78,height*0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
@@ -213,7 +215,8 @@ export class MinimapScene extends Phaser.Scene{
         // Timer Setup for Phone Events
         if(this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) > 0)
         {
-            this.onPhoneSubmit();
+            this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀");
+            
         }
         else
         {
@@ -226,8 +229,14 @@ export class MinimapScene extends Phaser.Scene{
         this.scene.start( ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over" );
     }
 
-    onPhoneSubmit ()
+    onPhoneSubmit (q, o1, o2, o3, correct_o)
     {
+        this._question.setText(q).setResolution(1);
+        this._option1.setText(o1).setResolution(1);
+        this._option2.setText(o2).setResolution(1);
+        this._option3.setText(o3).setResolution(1);
+        this._correct_o = (correct_o);
+
         console.log("Phone Event Triggerrred");
         this._lastphoneEvent = this.time.now;
         if(this._phoneEventTimer - 1 > 5)
@@ -261,18 +270,19 @@ export class MinimapScene extends Phaser.Scene{
 
     phoneHighlight(option, highlight) 
     {
-        // option.setScale(3).setResolution(5);
+
         option.setInteractive();
         option.on("pointerover", () => {
-            //highlight.setAlpha(1);
-            option.setTint(0xff00ff, 0xffff00, 0x0000ff, 0xff0000);
+            option.setScale(1.5);
         })
 
         option.on("pointerout", () => {
-            option.setTint("#ffffff", 0);
+            option.setScale(2/3);
         })
 
         option.on("pointerup", () => {
+            
+            // Submission Check
             console.log("Submission", option._text);
             this._phone.setAlpha(0);
             this._phonescreen_bg.setAlpha(0);
@@ -281,8 +291,15 @@ export class MinimapScene extends Phaser.Scene{
             this._option2.setAlpha(0);
             this._option3.setAlpha(0);
 
+            // Difficulty Increased
             this._angularVel = this._angularVel + 0.04/3;
             this._thrust = this._thrust + 0.3/3;
+
+            if(this._correct_o !== option._text)
+            {
+                this._socialscorevalue -= 1.5; 
+                this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10");    
+            }
         })
     }
 
