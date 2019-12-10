@@ -24,7 +24,7 @@ export class MenuScene extends Phaser.Scene{
         const logo = this.add.image(400, 150, 'menu_logo' ).setDepth(2);
         logo.setScale(2);
 
-        let carmouse = this.add.sprite(300,300,'car');
+        let carmouse = this.add.sprite(250,310,'car');
         carmouse.setScale(1/16).setOrigin(0).setVisible(false);
 
         let playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });

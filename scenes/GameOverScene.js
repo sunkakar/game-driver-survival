@@ -11,7 +11,7 @@ export class GameOverScene extends Phaser.Scene{
     }
 
     init(msg){
-        console.log("Menu: ",msg);
+        console.log("GameOver: ",msg);
     }
 
     preload(){
@@ -42,7 +42,7 @@ export class GameOverScene extends Phaser.Scene{
 
         playButton.on("pointerup", () => {
             console.log("Start Game");
-            this.scene.start( ActiveScene.AvailableScenes.Menu, "Menu -> Minimap" );
+            this.scene.start( ActiveScene.AvailableScenes.Menu, "GameOver -> Menu" );
         })
     }
 }

@@ -4,15 +4,19 @@ import { ActiveScene } from './ACTIVE_SCENE.js';
 let controls;
 
 export class MinimapScene extends Phaser.Scene{
-    constructor(player = null){
+    constructor(player = null, health = 100){
         super({
             key: ActiveScene.AvailableScenes.Minimap
         })
         this._player = player;
+        this._text = "Health: 100%";
+        this._health = health;
+        this._score = null;
+        this._lostGame = false;
     }
 
     init(msg){
-        console.log("Minimap: ",msg);
+        console.log("Minimap: ", msg );
     }
 
     preload(){
@@ -28,6 +32,7 @@ export class MinimapScene extends Phaser.Scene{
     }
 
     create(){
+
 
         // Map Setup
         const map = this.make.tilemap({ key: "map" });
@@ -45,41 +50,56 @@ export class MinimapScene extends Phaser.Scene{
 
         //collisionLayer.setDepth(2);
         this._player = this.matter.add.image(450,150,'car').setScale(1/20);
-        //this._player.body.rotate = 90;
-        //this._player.setFixedRotation(90);
-        //this.physics.add.collider(this._player, collisionLayer);
         
 
-        this.add
-            .text(16, 16, "Get to your Destinations!", {
-            font: "18px monospace",
-            fill: "#ffffff",
-            padding: { x: 20, y: 10 },
-            backgroundColor: "#000000"
+        let score = this.add.text(16, 16, this._text, {
+                font: "18px monospace",
+                fill: "#ffffff",
+                padding: { x: 20, y: 10 },
+                backgroundColor: "#000000"
             })
             .setScrollFactor(0);
 
+        //let endGame = this.scene.start( ActiveScene.AvailableScenes.GameOver, "Menu -> Minimap" );
+        
+        // Camera View Settings
         const camera = this.cameras.main;
         camera.startFollow(this._player);
         camera.setBounds(0, 0, 2300, 1530);
 
+
+        // DEBUG Rules
         this.matter.world.createDebugGraphic();
         this.matter.world.drawDebug = false;
         this.input.keyboard.on("keydown_D", event => {
             this.matter.world.drawDebug = !this.matter.world.drawDebug;
             this.matter.world.debugGraphic.clear();
         });
-        
+
+        // Update Damage taken by player 
+        let healthvalue = this._health;
         this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
-            console.log('collision :', this.scene);
-            //LostGame();
+            console.log('collision :', healthvalue, this._text, this._lostGame);
+            if(healthvalue > 0)
+            {
+                healthvalue = healthvalue - 50;
+                this.scene._text = "Health: " + healthvalue + "%";
+                score.setText(this.scene._text);    
+            } 
+            else
+            {
+                //endGame;
+                console.log(this);
+                this.scene.endGame();
+                
+            }
         });
+
     }
 
     update(time, delta){
         //controls.update(delta);
         let cursors = this.input.keyboard.createCursorKeys();
-        let playerSpeed = 200;
 
         this._player.setVelocity(0);
         //this._player.velocity.normalize().scale(playerSpeed);
@@ -106,6 +126,10 @@ export class MinimapScene extends Phaser.Scene{
             this._player.thrust(-0.5);
         }
         
+    }
+
+    endGame() {
+        this.scene.start( ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over" );
     }
 
 }

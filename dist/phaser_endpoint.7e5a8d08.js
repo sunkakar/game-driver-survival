@@ -128,7 +128,8 @@ var ActiveScene = {
   AvailableScenes: {
     Load: "Load",
     Menu: "Menu",
-    Minimap: "Minimap"
+    Minimap: "Minimap",
+    GameOver: "GameOver"
   }
 };
 exports.ActiveScene = ActiveScene;
@@ -281,7 +282,7 @@ function (_Phaser$Scene) {
           height = _this$sys$game$config.height;
       var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
       logo.setScale(2);
-      var carmouse = this.add.sprite(300, 300, 'car');
+      var carmouse = this.add.sprite(250, 310, 'car');
       carmouse.setScale(1 / 16).setOrigin(0).setVisible(false);
       var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
       this.add.text(350, 300, "Play", {
@@ -347,6 +348,7 @@ function (_Phaser$Scene) {
     var _this;
 
     var player = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var health = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
 
     _classCallCheck(this, MinimapScene);
 
@@ -354,6 +356,10 @@ function (_Phaser$Scene) {
       key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap
     }));
     _this._player = player;
+    _this._text = "Health: 100%";
+    _this._health = health;
+    _this._score = null;
+    _this._lostGame = false;
     return _this;
   }
 
@@ -392,11 +398,8 @@ function (_Phaser$Scene) {
       });
       this.matter.world.convertTilemapLayer(collisionLayer); //collisionLayer.setDepth(2);
 
-      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20); //this._player.body.rotate = 90;
-      //this._player.setFixedRotation(90);
-      //this.physics.add.collider(this._player, collisionLayer);
-
-      this.add.text(16, 16, "Get to your Destinations!", {
+      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20);
+      var score = this.add.text(16, 16, this._text, {
         font: "18px monospace",
         fill: "#ffffff",
         padding: {
@@ -404,19 +407,34 @@ function (_Phaser$Scene) {
           y: 10
         },
         backgroundColor: "#000000"
-      }).setScrollFactor(0);
+      }).setScrollFactor(0); //let endGame = this.scene.start( ActiveScene.AvailableScenes.GameOver, "Menu -> Minimap" );
+      // Camera View Settings
+
       var camera = this.cameras.main;
       camera.startFollow(this._player);
-      camera.setBounds(0, 0, 2300, 1530);
+      camera.setBounds(0, 0, 2300, 1530); // DEBUG Rules
+
       this.matter.world.createDebugGraphic();
       this.matter.world.drawDebug = false;
       this.input.keyboard.on("keydown_D", function (event) {
         _this2.matter.world.drawDebug = !_this2.matter.world.drawDebug;
 
         _this2.matter.world.debugGraphic.clear();
-      });
+      }); // Update Damage taken by player 
+
+      var healthvalue = this._health;
       this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
-        console.log('collision :', this.scene); //LostGame();
+        console.log('collision :', healthvalue, this._text, this._lostGame);
+
+        if (healthvalue > 0) {
+          healthvalue = healthvalue - 50;
+          this.scene._text = "Health: " + healthvalue + "%";
+          score.setText(this.scene._text);
+        } else {
+          //endGame;
+          console.log(this);
+          this.scene.endGame();
+        }
       });
     }
   }, {
@@ -424,7 +442,6 @@ function (_Phaser$Scene) {
     value: function update(time, delta) {
       //controls.update(delta);
       var cursors = this.input.keyboard.createCursorKeys();
-      var playerSpeed = 200;
 
       this._player.setVelocity(0); //this._player.velocity.normalize().scale(playerSpeed);
 
@@ -446,6 +463,11 @@ function (_Phaser$Scene) {
       } else if (cursors.down.isDown) {
         this._player.thrust(-0.5);
       }
+    }
+  }, {
+    key: "endGame",
+    value: function endGame() {
+      this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over");
     }
   }]);
 
@@ -499,7 +521,7 @@ function (_Phaser$Scene) {
   _createClass(GameOverScene, [{
     key: "init",
     value: function init(msg) {
-      console.log("Menu: ", msg);
+      console.log("GameOver: ", msg);
     }
   }, {
     key: "preload",
@@ -533,7 +555,7 @@ function (_Phaser$Scene) {
       playButton.on("pointerup", function () {
         console.log("Start Game");
 
-        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu, "Menu -> Minimap");
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu, "GameOver -> Menu");
       });
     }
   }]);
@@ -639,7 +661,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62266" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62758" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
