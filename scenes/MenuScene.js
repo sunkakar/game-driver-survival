@@ -19,6 +19,8 @@ export class MenuScene extends Phaser.Scene{
 
     create(){
         // Height and Width for screen
+        let menu_music = this.sound.play('menu_music');
+        //menu_music.setVolume(0.7);
         const { width, height } = this.sys.game.config;
 
         const logo = this.add.image(400, 150, 'menu_logo' ).setDepth(2);

@@ -37,6 +37,7 @@ export class LoadScene extends Phaser.Scene{
             //this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
 
             //this.load.audio()
+            this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
         }
 
         this.load.on("progress", (percentage) => {

@@ -202,6 +202,8 @@ function (_Phaser$Scene) {
         this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.image("tiles", "../dist/asset/spritesheet/roads2W.png");
         //this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
         //this.load.audio()
+
+        this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
       }
 
       this.load.on("progress", function (percentage) {
@@ -277,6 +279,8 @@ function (_Phaser$Scene) {
       var _this = this;
 
       // Height and Width for screen
+      var menu_music = this.sound.play('menu_music'); //menu_music.setVolume(0.7);
+
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
           height = _this$sys$game$config.height;
@@ -385,6 +389,7 @@ function (_Phaser$Scene) {
       this._text = "Health: 100%";
       this._lastphoneEvent = this.time.now;
       this._phoneEventTimer = 10;
+      this._socialscorevalue = 10;
     }
   }, {
     key: "preload",
@@ -518,9 +523,9 @@ function (_Phaser$Scene) {
   }, {
     key: "update",
     value: function update(time, delta) {
+      //this._player.thrust(1);
       //controls.update(delta);
-      var cursors = //this.input.keyboard.createCursorKeys();
-      this.input.keyboard.addKeys({
+      var cursors = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
         left: Phaser.Input.Keyboard.KeyCodes.A,

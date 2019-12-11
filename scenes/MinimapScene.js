@@ -35,6 +35,7 @@ export class MinimapScene extends Phaser.Scene{
         this._text = "Health: 100%";
         this._lastphoneEvent = this.time.now;
         this._phoneEventTimer = 10;
+        this._socialscorevalue = 10;
     }
 
     preload()
@@ -172,9 +173,9 @@ export class MinimapScene extends Phaser.Scene{
 
     update(time, delta)
     {
+        //this._player.thrust(1);
         //controls.update(delta);
-        let cursors = //this.input.keyboard.createCursorKeys();
-        this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D});
+        let cursors = this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D});
         const { width, height } = this.sys.game.config;
 
         //this._player.setVelocity(0);
@@ -203,7 +204,7 @@ export class MinimapScene extends Phaser.Scene{
         else if (cursors.right.isDown)
         {
             this._player.setAngularVelocity( this._angularVel);
-        }        
+        }
         // if(this._F11.isDown)
         // {
         //     /**
