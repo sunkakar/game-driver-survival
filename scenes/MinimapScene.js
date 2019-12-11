@@ -3,6 +3,9 @@ import { ActiveScene } from './ACTIVE_SCENE.js';
 
 let controls;
 let HighlightBar;
+let rightTurn;
+let leftTurn;
+
 export class MinimapScene extends Phaser.Scene{
     constructor(player = null, health = 100){
         super({
@@ -25,21 +28,39 @@ export class MinimapScene extends Phaser.Scene{
         this._option3 = null;
         this._F11 = null;
         this._angularVel = 0.03;
-        this._thrust = 0.25;
+        this._thrust = 0.15;
         this._solved = 0;
     }
 
     init(msg)
     {
         console.log("Minimap: ", msg );
+
         this._text = "Health: 100%";
-        this._lastphoneEvent = this.time.now;
-        this._phoneEventTimer = 10;
+        this._health = 100;
+        this._score = null;
+        this._socialscore = null;
         this._socialscorevalue = 10;
+        this._lostGame = false;
+        this._phone = null;
+        this._data = [];
+        this._lastphoneEvent = this.time.now;
+        this._phoneEventTimer = 20;
+        this._phonescreen_bg = null;
+        this._option1 = null;
+        this._option2 = null;
+        this._option3 = null;
+        this._F11 = null;
+        this._angularVel = 0.03;
+        this._thrust = 0.15;
+        this._solved = 0;
     }
 
     preload()
     {
+        //this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
+        this.load.audio('crash_1', './asset/collision_audio/66780__kevinkace__crate-break-4.mp3');
+        this.load.audio('crash_2', './asset/collision_audio/237375__squareal__car-crash.mp3');
 
         this.load.image('menu_bg', './asset/menu/menu-bg.png');
         //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
@@ -76,7 +97,7 @@ export class MinimapScene extends Phaser.Scene{
     
 
         //collisionLayer.setDepth(2);
-        this._player = this.matter.add.image(450,150,'car').setScale(1/20);
+        this._player = this.matter.add.image(450,150,'car').setScale(1/22);
         this._player.thrust(0.1);
         //this._player.setInertia(body,10);
         
@@ -113,7 +134,9 @@ export class MinimapScene extends Phaser.Scene{
 
         // Update Damage taken by player 
         let healthvalue = this._health;
-        this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+        this.matter.world.on('collisionstart', function (event, bodyA, bodyB) 
+        {
+            let crash_sound = this.scene.sound.play('crash_1');
             healthvalue = healthvalue - Math.floor(Math.random()*(8)+1);
             if(healthvalue > 0 && this.scene._socialscorevalue > 0 )
             {
@@ -123,6 +146,7 @@ export class MinimapScene extends Phaser.Scene{
             else
             {
                 // Game Over: Send to new Game Over scene
+                let lose = this.scene.sound.play('crash_2');
                 this.scene.endGame();
             }
         });
@@ -138,13 +162,7 @@ export class MinimapScene extends Phaser.Scene{
         this._option1 = this.add.text(width*0.78,height*0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
         this._option2 = this.add.text(width*0.78,height*0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
         this._option3 = this.add.text(width*0.78,height*0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
-
-        
-        let option1_bar = HighlightBar.fillRect(width*0.78,height*0.69, 300 , 30).setAlpha(0).setDepth(10);
-        let option2_bar = HighlightBar.fillRect(width*0.78,height*0.79, 300 , 30).setAlpha(0).setDepth(10);
-        let option3_bar = HighlightBar.fillRect(width*0.78,height*0.89, 300 , 30).setAlpha(0).setDepth(10);
-            
-        this._lastphoneEvent = this.time.now;
+    
 
         this._phone.setAlpha(0);
         this._phonescreen_bg.setAlpha(0);
@@ -155,9 +173,9 @@ export class MinimapScene extends Phaser.Scene{
           
 
         //Interactive Setup
-        this.phoneHighlight(this._option1, option1_bar);
-        this.phoneHighlight(this._option2, option2_bar);
-        this.phoneHighlight(this._option3, option3_bar);
+        this.phoneHighlight(this._option1);
+        this.phoneHighlight(this._option2);
+        this.phoneHighlight(this._option3);
 
 
         
@@ -167,36 +185,46 @@ export class MinimapScene extends Phaser.Scene{
         
         
         //delayedCall(3000, this.onPhoneSubmit, [], this);
-
+        rightTurn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        leftTurn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
     }
 
     update(time, delta)
     {
-        //this._player.thrust(1);
-        //controls.update(delta);
-        let cursors = this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D});
-        const { width, height } = this.sys.game.config;
+        console.log("Thrust: ", this._thrust);
 
-        //this._player.setVelocity(0);
-        //this._player.velocity.normalize().scale(playerSpeed);
+        let cursors = this.input.keyboard.addKeys({
+            //up:Phaser.Input.Keyboard.KeyCodes.W,
+            down:Phaser.Input.Keyboard.KeyCodes.SPACE,
+            left:Phaser.Input.Keyboard.KeyCodes.A,
+            right:Phaser.Input.Keyboard.KeyCodes.D
+        });
+        
+        const { width, height } = this.sys.game.config;
 
         this._player.setFrictionAir(0.15);
         this._player.setMass(100);
         this._player.setFixedRotation();
 
-        // Forward Motion 
-        if (cursors.up.isDown)
+        // CONSTANT FORWARD MOTION
+        this._player.thrust(this._thrust);
+
+        if (cursors.down.isDown)
         {
-            this._player.thrust(this._thrust);
-        }
-        else if (cursors.down.isDown)
-        {
-            this._player.thrust(-this._thrust*0.8);
+            this._player.thrust(-this._thrust/2);
         }
 
 
         // Turning Motion
+        if (Phaser.Input.Keyboard.JustDown(rightTurn))
+        {
+            this._player.setAngularVelocity( ( Math.PI * 18 ) / 180);
+        }
+        else if (Phaser.Input.Keyboard.JustDown(leftTurn))
+        {
+            this._player.setAngularVelocity( ( - Math.PI * 18 ) / 180);
+        }
         if (cursors.left.isDown)
         {
             this._player.setAngularVelocity( - this._angularVel);   
@@ -205,6 +233,15 @@ export class MinimapScene extends Phaser.Scene{
         {
             this._player.setAngularVelocity( this._angularVel);
         }
+        
+        // if (cursors.leftTurn.isDown)
+        // {
+        //     this._player.setAngularVelocity( - Math.PI / 2);   
+        // }
+        // else if (cursors.rightTurn.isDown)
+        // {
+        //     this._player.setAngularVelocity( Math.PI / 2);   
+        // }
         // if(this._F11.isDown)
         // {
         //     /**
@@ -247,17 +284,18 @@ export class MinimapScene extends Phaser.Scene{
         this.scene.start( ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over" );
     }
 
-    onPhoneSubmit (q, o1, o2, o3, correct_o)
+    onPhoneSubmit (q, o1, o2, o3, correct_o, callback)
     {
-        this._question.setText(q).setResolution(1);
-        this._option1.setText(o1).setResolution(1);
-        this._option2.setText(o2).setResolution(1);
-        this._option3.setText(o3).setResolution(1);
+        this._question.setText(q).setResolution(10);
+        this._option1.setText(o1).setResolution(10);
+        this._option2.setText(o2).setResolution(10);
+        this._option3.setText(o3).setResolution(10);
         this._correct_o = (correct_o);
 
         console.log("Phone Event Triggerrred");
         this._lastphoneEvent = this.time.now;
-        if(this._phoneEventTimer - 1 > 5)
+
+        if(this._phoneEventTimer - 1 > 10)
         {
             // Fade In Phone Overlay
             this.tweens.add({targets: this._phone,alpha: 1,duration: 2000,ease: 'Power2'}, this);
@@ -286,7 +324,7 @@ export class MinimapScene extends Phaser.Scene{
         
     }
 
-    phoneHighlight(option, highlight) 
+    phoneHighlight(option) 
     {
 
         option.setInteractive();
@@ -295,11 +333,10 @@ export class MinimapScene extends Phaser.Scene{
         })
 
         option.on("pointerout", () => {
-            option.setScale(2/3);
+            option.setScale(1);
         })
 
         option.on("pointerup", () => {
-            
             // Submission Check
             console.log("Submission", option._text);
             this._phone.setAlpha(0);
@@ -310,8 +347,8 @@ export class MinimapScene extends Phaser.Scene{
             this._option3.setAlpha(0);
 
             // Difficulty Increased
-            this._angularVel = this._angularVel + 0.04/3;
-            this._thrust = this._thrust + 0.3/3;
+            this._angularVel = this._angularVel + 0.013;
+            this._thrust = this._thrust + 0.05;
 
             if(this._correct_o !== option._text)
             {
@@ -319,6 +356,11 @@ export class MinimapScene extends Phaser.Scene{
                 this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10");    
             }
         })
+    }
+
+    phoneResponseTimer(time)
+    {
+        console.log("Here");
     }
 
 }

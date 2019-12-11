@@ -3,6 +3,8 @@ export const ActiveScene = {
         Load: "Load",
         Menu: "Menu",
         Minimap: "Minimap",
-        GameOver: "GameOver"
+        GameOver: "GameOver",
+        About: "About",
+        Instruction: "Instruction"
     }
 }

@@ -58,4 +58,10 @@ http://www.transparentpng.com/download/mobile-clipart-hd_10842.html
 https://www.zedge.net/find/wallpapers/minions
 
 http://www.transparentpng.com/download/speech-bubble-clip-art-at-pic_4233.html
+
+Photo by Anisur Rahman on Unsplash
+
+https://www.findsounds.com/ISAPI/search.dll?keywords=crash
+
+https://freesound.org/people/kevinkace/sounds/66780/
 ```
