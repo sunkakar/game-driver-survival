@@ -64,4 +64,7 @@ Photo by Anisur Rahman on Unsplash
 https://www.findsounds.com/ISAPI/search.dll?keywords=crash
 
 https://freesound.org/people/kevinkace/sounds/66780/
+
+<a target="_blank" href="/icons/set/circled-left-2">Back Arrow icon</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
 ```
