@@ -1,3 +1,5 @@
+// Contains Scenes
+
 export const ActiveScene = {
     AvailableScenes: {
         Load: "Load",
