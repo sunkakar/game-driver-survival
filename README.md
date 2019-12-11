@@ -1,13 +1,26 @@
-# game-driver-survival
-HTML5 GAME! 
+# Text or Drive
 
-## Phaser DOCS
+## Live 
+- https://sunkakar.github.io/game-driver-survival/
+
+## About 
+- This is a game written in Phaser 3. 
+
+## Installation
+- Clone repo and run the following 
+```
+  npm install
+  npm start
+```
+
+---
+
+# Phaser DOCS
 
 #### State Transition in Phaser.js
 ```
 [Start] -> init() -> preload() -> create() -> update()
 ```
-
 #### Phaser Plugins 
 ```
 this.events;  //  Event emitter
@@ -18,9 +31,6 @@ this.scene;   //  Scene Manager
 this.children;        //  Display List
 this.sys.updateList   //  Update List
 ```
-
-
-## Live https://sunkakar.github.io/game-driver-survival/
 
 ## Link to Andy's Tile Based World Example  
 - http://aharrisbooks.net/h5g/h5g_13/tbw/
