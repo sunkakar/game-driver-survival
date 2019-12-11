@@ -129,7 +129,9 @@ var ActiveScene = {
     Load: "Load",
     Menu: "Menu",
     Minimap: "Minimap",
-    GameOver: "GameOver"
+    GameOver: "GameOver",
+    About: "About",
+    Instruction: "Instruction"
   }
 };
 exports.ActiveScene = ActiveScene;
@@ -202,6 +204,8 @@ function (_Phaser$Scene) {
         this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.image("tiles", "../dist/asset/spritesheet/roads2W.png");
         //this.load.tilemapTiledJSON("map", "../dist/asset/spritesheet/map_updated.json");
         //this.load.audio()
+
+        this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
       }
 
       this.load.on("progress", function (percentage) {
@@ -276,14 +280,22 @@ function (_Phaser$Scene) {
     value: function create() {
       var _this = this;
 
-      // Height and Width for screen
+      var background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0); //this.add.image(0,0, "menu_bg").setOrigin(0);
+
+      background.displayWidth = 800;
+      background.displayHeight = 600; // Height and Width for screen
+
+      var menu_music = this.sound.play('menu_music'); //menu_music.setVolume(0.7);
+
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
           height = _this$sys$game$config.height;
       var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
       logo.setScale(2);
       var carmouse = this.add.sprite(250, 310, 'car');
-      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false);
+      carmouse;
+      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false); //carmouse.setRotation(10);
+
       var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
       this.add.text(350, 300, "Play", {
         font: "18px monospace",
@@ -292,6 +304,7 @@ function (_Phaser$Scene) {
       playButton.setScale(3).setResolution(5);
       playButton.setInteractive();
       playButton.on("pointerover", function () {
+        carmouse.y = 310;
         carmouse.setVisible(true);
       });
       playButton.on("pointerout", function () {
@@ -301,6 +314,42 @@ function (_Phaser$Scene) {
         console.log("Start Game");
 
         _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap");
+      });
+      var instructionsButton = this.add.text(350, 400, "Instructions", {
+        font: "15px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      instructionsButton.setScale(3).setResolution(5);
+      instructionsButton.setInteractive();
+      instructionsButton.on("pointerover", function () {
+        carmouse.y = 410;
+        carmouse.setVisible(true);
+      });
+      instructionsButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      instructionsButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Instruction, "Menu -> Instructions");
+      });
+      var AboutButton = this.add.text(350, 500, "About", {
+        font: "15px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      AboutButton.setScale(3).setResolution(5);
+      AboutButton.setInteractive();
+      AboutButton.on("pointerover", function () {
+        carmouse.y = 510;
+        carmouse.setVisible(true);
+      });
+      AboutButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      AboutButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.About, "Menu -> Instructions");
       });
     }
   }]);
@@ -339,6 +388,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 var controls;
 var HighlightBar;
+var rightTurn;
+var leftTurn;
 
 var MinimapScene =
 /*#__PURE__*/
@@ -373,7 +424,7 @@ function (_Phaser$Scene) {
     _this._option3 = null;
     _this._F11 = null;
     _this._angularVel = 0.03;
-    _this._thrust = 0.25;
+    _this._thrust = 0.15;
     _this._solved = 0;
     return _this;
   }
@@ -383,12 +434,30 @@ function (_Phaser$Scene) {
     value: function init(msg) {
       console.log("Minimap: ", msg);
       this._text = "Health: 100%";
+      this._health = 100;
+      this._score = null;
+      this._socialscore = null;
+      this._socialscorevalue = 10;
+      this._lostGame = false;
+      this._phone = null;
+      this._data = [];
       this._lastphoneEvent = this.time.now;
-      this._phoneEventTimer = 10;
+      this._phoneEventTimer = 20;
+      this._phonescreen_bg = null;
+      this._option1 = null;
+      this._option2 = null;
+      this._option3 = null;
+      this._F11 = null;
+      this._angularVel = 0.03;
+      this._thrust = 0.15;
+      this._solved = 0;
     }
   }, {
     key: "preload",
     value: function preload() {
+      //this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
+      this.load.audio('crash_1', './asset/collision_audio/66780__kevinkace__crate-break-4.mp3');
+      this.load.audio('crash_2', './asset/collision_audio/237375__squareal__car-crash.mp3');
       this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
       //this.load.atlas('base_map', './asset/spritesheet/tiles_spritesheet.png', 'asset/spritesheet/tiles_spritesheet.json');
 
@@ -426,7 +495,7 @@ function (_Phaser$Scene) {
       });
       this.matter.world.convertTilemapLayer(collisionLayer); //collisionLayer.setDepth(2);
 
-      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 20);
+      this._player = this.matter.add.image(450, 150, 'car').setScale(1 / 22);
 
       this._player.thrust(0.1); //this._player.setInertia(body,10);
       //this._F11 = this.input.keyboard.addKey(this.Keyboard.F11);  //Fix
@@ -464,6 +533,7 @@ function (_Phaser$Scene) {
 
       var healthvalue = this._health;
       this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
+        var crash_sound = this.scene.sound.play('crash_1');
         healthvalue = healthvalue - Math.floor(Math.random() * 8 + 1);
 
         if (healthvalue > 0 && this.scene._socialscorevalue > 0) {
@@ -472,6 +542,7 @@ function (_Phaser$Scene) {
           this.scene._score.setText(this.scene._text);
         } else {
           // Game Over: Send to new Game Over scene
+          var lose = this.scene.sound.play('crash_2');
           this.scene.endGame();
         }
       }); // Phone Graphic
@@ -491,10 +562,6 @@ function (_Phaser$Scene) {
       this._option1 = this.add.text(width * 0.78, height * 0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
       this._option2 = this.add.text(width * 0.78, height * 0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
       this._option3 = this.add.text(width * 0.78, height * 0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
-      var option1_bar = HighlightBar.fillRect(width * 0.78, height * 0.69, 300, 30).setAlpha(0).setDepth(10);
-      var option2_bar = HighlightBar.fillRect(width * 0.78, height * 0.79, 300, 30).setAlpha(0).setDepth(10);
-      var option3_bar = HighlightBar.fillRect(width * 0.78, height * 0.89, 300, 30).setAlpha(0).setDepth(10);
-      this._lastphoneEvent = this.time.now;
 
       this._phone.setAlpha(0);
 
@@ -509,47 +576,62 @@ function (_Phaser$Scene) {
       this._option3.setAlpha(0); //Interactive Setup
 
 
-      this.phoneHighlight(this._option1, option1_bar);
-      this.phoneHighlight(this._option2, option2_bar);
-      this.phoneHighlight(this._option3, option3_bar); //let timedEvent = this.time.now;
+      this.phoneHighlight(this._option1);
+      this.phoneHighlight(this._option2);
+      this.phoneHighlight(this._option3); //let timedEvent = this.time.now;
       //console.log(timedEvent);
       //delayedCall(3000, this.onPhoneSubmit, [], this);
+
+      rightTurn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+      leftTurn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     }
   }, {
     key: "update",
     value: function update(time, delta) {
-      //controls.update(delta);
-      var cursors = //this.input.keyboard.createCursorKeys();
-      this.input.keyboard.addKeys({
-        up: Phaser.Input.Keyboard.KeyCodes.W,
-        down: Phaser.Input.Keyboard.KeyCodes.S,
+      console.log("Thrust: ", this._thrust);
+      var cursors = this.input.keyboard.addKeys({
+        //up:Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.SPACE,
         left: Phaser.Input.Keyboard.KeyCodes.A,
         right: Phaser.Input.Keyboard.KeyCodes.D
       });
       var _this$sys$game$config2 = this.sys.game.config,
           width = _this$sys$game$config2.width,
-          height = _this$sys$game$config2.height; //this._player.setVelocity(0);
-      //this._player.velocity.normalize().scale(playerSpeed);
+          height = _this$sys$game$config2.height;
 
       this._player.setFrictionAir(0.15);
 
       this._player.setMass(100);
 
-      this._player.setFixedRotation(); // Forward Motion 
+      this._player.setFixedRotation(); // CONSTANT FORWARD MOTION
 
 
-      if (cursors.up.isDown) {
-        this._player.thrust(this._thrust);
-      } else if (cursors.down.isDown) {
-        this._player.thrust(-this._thrust * 0.8);
+      this._player.thrust(this._thrust);
+
+      if (cursors.down.isDown) {
+        this._player.thrust(-this._thrust / 2);
       } // Turning Motion
 
+
+      if (Phaser.Input.Keyboard.JustDown(rightTurn)) {
+        this._player.setAngularVelocity(Math.PI * 18 / 180);
+      } else if (Phaser.Input.Keyboard.JustDown(leftTurn)) {
+        this._player.setAngularVelocity(-Math.PI * 18 / 180);
+      }
 
       if (cursors.left.isDown) {
         this._player.setAngularVelocity(-this._angularVel);
       } else if (cursors.right.isDown) {
         this._player.setAngularVelocity(this._angularVel);
-      } // if(this._F11.isDown)
+      } // if (cursors.leftTurn.isDown)
+      // {
+      //     this._player.setAngularVelocity( - Math.PI / 2);   
+      // }
+      // else if (cursors.rightTurn.isDown)
+      // {
+      //     this._player.setAngularVelocity( Math.PI / 2);   
+      // }
+      // if(this._F11.isDown)
       // {
       //     /**
       //      * this._map.height = window.screen.height;
@@ -596,20 +678,20 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "onPhoneSubmit",
-    value: function onPhoneSubmit(q, o1, o2, o3, correct_o) {
-      this._question.setText(q).setResolution(1);
+    value: function onPhoneSubmit(q, o1, o2, o3, correct_o, callback) {
+      this._question.setText(q).setResolution(10);
 
-      this._option1.setText(o1).setResolution(1);
+      this._option1.setText(o1).setResolution(10);
 
-      this._option2.setText(o2).setResolution(1);
+      this._option2.setText(o2).setResolution(10);
 
-      this._option3.setText(o3).setResolution(1);
+      this._option3.setText(o3).setResolution(10);
 
       this._correct_o = correct_o;
       console.log("Phone Event Triggerrred");
       this._lastphoneEvent = this.time.now;
 
-      if (this._phoneEventTimer - 1 > 5) {
+      if (this._phoneEventTimer - 1 > 10) {
         // Fade In Phone Overlay
         this.tweens.add({
           targets: this._phone,
@@ -700,7 +782,7 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "phoneHighlight",
-    value: function phoneHighlight(option, highlight) {
+    value: function phoneHighlight(option) {
       var _this2 = this;
 
       option.setInteractive();
@@ -708,7 +790,7 @@ function (_Phaser$Scene) {
         option.setScale(1.5);
       });
       option.on("pointerout", function () {
-        option.setScale(2 / 3);
+        option.setScale(1);
       });
       option.on("pointerup", function () {
         // Submission Check
@@ -727,8 +809,8 @@ function (_Phaser$Scene) {
         _this2._option3.setAlpha(0); // Difficulty Increased
 
 
-        _this2._angularVel = _this2._angularVel + 0.04 / 3;
-        _this2._thrust = _this2._thrust + 0.3 / 3;
+        _this2._angularVel = _this2._angularVel + 0.013;
+        _this2._thrust = _this2._thrust + 0.05;
 
         if (_this2._correct_o !== option._text) {
           _this2._socialscorevalue -= 5;
@@ -736,6 +818,11 @@ function (_Phaser$Scene) {
           _this2._socialscore.setText("Social Score: " + _this2._socialscorevalue + "/10");
         }
       });
+    }
+  }, {
+    key: "phoneResponseTimer",
+    value: function phoneResponseTimer(time) {
+      console.log("Here");
     }
   }]);
 
@@ -832,6 +919,230 @@ function (_Phaser$Scene) {
 }(Phaser.Scene);
 
 exports.GameOverScene = GameOverScene;
+},{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"scenes/AboutScene.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AboutScene = void 0;
+
+var _ACTIVE_SCENE = require("./ACTIVE_SCENE.js");
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Menu Scene
+/// Displays the Menu and shows options
+var AboutScene =
+/*#__PURE__*/
+function (_Phaser$Scene) {
+  _inherits(AboutScene, _Phaser$Scene);
+
+  function AboutScene() {
+    _classCallCheck(this, AboutScene);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(AboutScene).call(this, {
+      key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.About
+    }));
+  }
+
+  _createClass(AboutScene, [{
+    key: "init",
+    value: function init(msg) {
+      console.log("About: ", msg);
+    }
+  }, {
+    key: "preload",
+    value: function preload() {}
+  }, {
+    key: "create",
+    value: function create() {
+      var _this = this;
+
+      // Height and Width for screen
+      var menu_music = this.sound.play('menu_music'); //menu_music.setVolume(0.7);
+
+      var _this$sys$game$config = this.sys.game.config,
+          width = _this$sys$game$config.width,
+          height = _this$sys$game$config.height;
+      var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
+      logo.setScale(2);
+      var carmouse = this.add.sprite(250, 310, 'car');
+      carmouse;
+      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false); //carmouse.setRotation(10);
+
+      var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
+      this.add.text(350, 300, "Play", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      playButton.setScale(3).setResolution(5);
+      playButton.setInteractive();
+      playButton.on("pointerover", function () {
+        carmouse.y = 310;
+        carmouse.setVisible(true);
+      });
+      playButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      playButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap");
+      });
+      var instructionsButton = this.add.text(350, 400, "Instructions", {
+        font: "15px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      instructionsButton.setScale(3).setResolution(5);
+      instructionsButton.setInteractive();
+      instructionsButton.on("pointerover", function () {
+        carmouse.y = 410;
+        carmouse.setVisible(true);
+      });
+      instructionsButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      instructionsButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Instructions, "Menu -> Instructions");
+      });
+      var AboutButton = this.add.text(350, 500, "About", {
+        font: "15px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      AboutButton.setScale(3).setResolution(5);
+      AboutButton.setInteractive();
+      AboutButton.on("pointerover", function () {
+        carmouse.y = 510;
+        carmouse.setVisible(true);
+      });
+      AboutButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      AboutButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.About, "Menu -> Instructions");
+      });
+    }
+  }]);
+
+  return AboutScene;
+}(Phaser.Scene);
+
+exports.AboutScene = AboutScene;
+},{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"scenes/InstructionScene.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.InstructionScene = void 0;
+
+var _ACTIVE_SCENE = require("./ACTIVE_SCENE.js");
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Menu Scene
+/// Displays the Menu and shows options
+var InstructionScene =
+/*#__PURE__*/
+function (_Phaser$Scene) {
+  _inherits(InstructionScene, _Phaser$Scene);
+
+  function InstructionScene() {
+    _classCallCheck(this, InstructionScene);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(InstructionScene).call(this, {
+      key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.Instruction
+    }));
+  }
+
+  _createClass(InstructionScene, [{
+    key: "init",
+    value: function init(msg) {
+      console.log("Instruction: ", msg);
+    }
+  }, {
+    key: "preload",
+    value: function preload() {}
+  }, {
+    key: "create",
+    value: function create() {
+      var _this = this;
+
+      // Height and Width for screen
+      var menu_music = this.sound.play('menu_music'); //menu_music.setVolume(0.7);
+
+      var _this$sys$game$config = this.sys.game.config,
+          width = _this$sys$game$config.width,
+          height = _this$sys$game$config.height;
+      var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
+      logo.setScale(2);
+      var carmouse = this.add.sprite(250, 310, 'car');
+      carmouse;
+      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false); //carmouse.setRotation(10);
+
+      var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
+      this.add.text(350, 300, "Play", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      playButton.setScale(3).setResolution(5);
+      playButton.setInteractive();
+      playButton.on("pointerover", function () {
+        carmouse.y = 310;
+        carmouse.setVisible(true);
+      });
+      playButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      playButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Instruction -> Minimap");
+      });
+    }
+  }]);
+
+  return InstructionScene;
+}(Phaser.Scene);
+
+exports.InstructionScene = InstructionScene;
 },{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"phaser_endpoint.js":[function(require,module,exports) {
 "use strict";
 
@@ -843,6 +1154,11 @@ var _MinimapScene = require("./scenes/MinimapScene");
 
 var _GameOverScene = require("./scenes/GameOverScene");
 
+var _AboutScene = require("./scenes/AboutScene");
+
+var _InstructionScene = require("./scenes/InstructionScene");
+
+// Setup Config
 var config = {
   type: Phaser.AUTO,
   // Which renderer to use
@@ -852,10 +1168,10 @@ var config = {
   // Canvas height in pixels
   backgroundColor: '#f09020',
   parent: "game-container",
-  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene, _GameOverScene.GameOverScene],
-  render: {
-    pixelArt: true
-  },
+  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene, _GameOverScene.GameOverScene, _AboutScene.AboutScene, _InstructionScene.InstructionScene],
+  // render:{
+  //   pixelArt: true
+  // },
   physics: {
     default: "matter",
     matter: {
@@ -867,41 +1183,8 @@ var config = {
     }
   }
 };
-var game = new Phaser.Game(config); // function preload() {
-//   // Runs once, loads up assets like images and audio
-//   this.load.image("grass", "./asset/png/tile/Background_Tiles/Grass_Tile.png");
-//   //this.load.image("grass-tiles", "../spritesheet/grass_ss.png");
-//   this.load.tilemap("grass-tiles", "../spritesheet/grass_ss.png",32,32);
-//   this.load.image('car', './assets/png/car/Car_1_Main_Positions/Car_1_01.png');
-//   this.load.tilemapTiledJSON('map', './spritesheet/grass_ss.json');
-//   this.load.image('tiles1', 'assets/tilemaps/tiles/super-mario.png');
-// }
-// function create() {
-//   // Runs once, after all assets in preload are loaded
-//   const level = [
-//       [  0,   2,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-//       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ]
-//     ];
-//     map = game.add.tilemap('map');
-//     var background = this.add.sprite(0, 0, "grass", "./asset/png/tile/Grass_Tile (2).png");
-//     const map = this.make.tilemap({ data: level, tileWidth: 50, tileHeight: 50 });
-//     const tiles = map.addTilesetImage("grass-tiles");
-//     const layer = map.createStaticLayer(0, tiles, 0, 0);
-//     //background.setScale(3, 2.4);
-// }
-// function update(time, delta) {
-//   // Runs once per frame for the duration of the scene
-// }
-},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var game = new Phaser.Game(config);
+},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js","./scenes/AboutScene":"scenes/AboutScene.js","./scenes/InstructionScene":"scenes/InstructionScene.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -929,7 +1212,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60846" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52137" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -1105,5 +1388,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","phaser_endpoint.js"], null)
+},{}]},{},["../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","phaser_endpoint.js"], null)
 //# sourceMappingURL=/phaser_endpoint.7e5a8d08.js.map
