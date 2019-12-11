@@ -19,13 +19,14 @@ export class MenuScene extends Phaser.Scene{
 
     create(){
 
-        const background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0) //this.add.image(0,0, "menu_bg").setOrigin(0);
+        const background = this.add.image('base_map',).setOrigin(0) //this.add.image(0,0, "menu_bg").setOrigin(0);
         background.displayWidth = 800;
         background.displayHeight = 600;
 
-        // Height and Width for screen
-        let menu_music = this.sound.play('menu_music');
-        //menu_music.setVolume(0.7);
+        // Music
+        let menu_music = this.sound.play('menu_music',{
+            loop: true
+        });
         const { width, height } = this.sys.game.config;
 
         const logo = this.add.image(400, 150, 'menu_logo' ).setDepth(2);

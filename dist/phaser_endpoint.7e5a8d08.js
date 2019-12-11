@@ -281,13 +281,14 @@ function (_Phaser$Scene) {
     value: function create() {
       var _this = this;
 
-      var background = this.add.image('base_map', 'Decor/Racing_Lights (2).png').setOrigin(0); //this.add.image(0,0, "menu_bg").setOrigin(0);
+      var background = this.add.image('base_map').setOrigin(0); //this.add.image(0,0, "menu_bg").setOrigin(0);
 
       background.displayWidth = 800;
-      background.displayHeight = 600; // Height and Width for screen
+      background.displayHeight = 600; // Music
 
-      var menu_music = this.sound.play('menu_music'); //menu_music.setVolume(0.7);
-
+      var menu_music = this.sound.play('menu_music', {
+        loop: true
+      });
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
           height = _this$sys$game$config.height;
@@ -881,7 +882,9 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "preload",
-    value: function preload() {}
+    value: function preload() {
+      this.load.image('statistics', './asset/menu/statistics.png');
+    }
   }, {
     key: "create",
     value: function create() {
@@ -891,12 +894,20 @@ function (_Phaser$Scene) {
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
           height = _this$sys$game$config.height;
-      var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
-      logo.setScale(2);
-      var carmouse = this.add.sprite(300, 300, 'car');
+      var logo = this.add.image(400, height * 0.6, 'statistics').setDepth(2);
+      logo.setScale(0.5);
+      var title = this.add.text(width * 0.3, height * 0.05, "You Crashed!", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(3).setResolution(5);
+      var goal_description = this.add.text(width * 0.02, height * 0.3, "It's important to be safe on the roads. Over 90% of crashes are the fault of \ndrivers. The most frequent driver mistake is 'Recognition Error' i.e. the\ndriver's inattention. Here are some statistics from the National Safety Council.\nIs it worth it? You decide 😀", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(1).setResolution(5);
+      var carmouse = this.add.sprite(120, height * 0.8, 'car');
       carmouse.setScale(1 / 16).setOrigin(0).setVisible(false);
       var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
-      this.add.text(220, 300, "Play Again!", {
+      this.add.text(220, height * 0.8, "Play Again!", {
         font: "18px monospace",
         color: "white"
       }).setShadow(5, 5, "#5588EE", 0, true, true);
@@ -1100,33 +1111,52 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "preload",
-    value: function preload() {}
+    value: function preload() {
+      this.load.image('concept', './asset/menu/concept.png');
+    }
   }, {
     key: "create",
     value: function create() {
       var _this = this;
 
       // Height and Width for screen
-      var menu_music = this.sound.play('menu_music'); //menu_music.setVolume(0.7);
-
+      //menu_music.setVolume(0.7);
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
           height = _this$sys$game$config.height;
-      var logo = this.add.image(400, 150, 'menu_logo').setDepth(2);
-      logo.setScale(2);
-      var carmouse = this.add.sprite(250, 310, 'car');
-      carmouse;
-      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false); //carmouse.setRotation(10);
-
-      var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
-      this.add.text(350, 300, "Play", {
+      var concept_image = this.add.image(600, 150, 'concept').setScale(0.4).setDepth(2);
+      var title = this.add.text(width * 0.02, height * 0.05, "Instructions:", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(3).setResolution(5);
+      var goal = this.add.text(width * 0.02, height * 0.15, "Goal: ", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(2).setResolution(5);
+      var goal_description = this.add.text(width * 0.02, height * 0.21, "It's important to be safe on the roads, \nbut if you don't post your 5th video of \nsome song playing on the radio, you might\njust go into anaphylactic shock. You\nthink you're good at Texting and\nDriving? We'll see 👀", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(1).setResolution(5);
+      var controls = this.add.text(width * 0.02, height * 0.41, "Controls:", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(2).setResolution(5);
+      var controls_list = this.add.text(width * 0.02, height * 0.5, " [A] - Turn Left \t [Q] - Quick Left Turn (90*) \n [D] - Turn Right\t [E] - Quick Right Turn (90*)\n [SPACEBAR] - Slow/Drift", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(1.5).setResolution(5);
+      var controls_description = this.add.text(width * 0.02, height * 0.65, " Use your LEFT HAND on the [ASD]. \n Use your RIGHT HAND for the MOUSE to answer any texts\n The car moves forward freely and as the timer ticks down, gets \n slightly faster 🤔. Use Quick Turns occassionally to turn \n swiftly and ENDANGER TRAFFIC.\n Good Luck! ", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(1.2).setResolution(5);
+      var carmouse = this.add.sprite(width * 0.82 - 60, height * 0.9 + 20, 'car').setScale(1 / 16).setVisible(false);
+      var playButton = this.add.text(width * 0.82, height * 0.9, "Play!", {
         font: "18px monospace",
         color: "white"
       }).setShadow(5, 5, "#5588EE", 0, true, true);
       playButton.setScale(3).setResolution(5);
       playButton.setInteractive();
       playButton.on("pointerover", function () {
-        carmouse.y = 310;
         carmouse.setVisible(true);
       });
       playButton.on("pointerout", function () {
@@ -1213,7 +1243,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52581" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63506" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
