@@ -24,9 +24,10 @@ export class MenuScene extends Phaser.Scene{
         background.displayHeight = 600;
 
         // Music
-        let menu_music = this.sound.play('menu_music',{
+        let menu_music = this.sound.add('menu_music',{
             loop: true
         });
+        menu_music.play();
         const { width, height } = this.sys.game.config;
 
         const logo = this.add.image(400, 150, 'menu_logo' ).setDepth(2);
@@ -53,6 +54,7 @@ export class MenuScene extends Phaser.Scene{
 
         playButton.on("pointerup", () => {
             console.log("Start Game");
+            menu_music.stop();
             this.scene.start( ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap" );
         })
 
@@ -69,7 +71,6 @@ export class MenuScene extends Phaser.Scene{
         })
 
         instructionsButton.on("pointerup", () => {
-            console.log("Start Game");
             this.scene.start( ActiveScene.AvailableScenes.Instruction, "Menu -> Instructions" );
         })
 

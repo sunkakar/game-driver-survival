@@ -75,6 +75,8 @@ https://www.findsounds.com/ISAPI/search.dll?keywords=crash
 
 https://freesound.org/people/kevinkace/sounds/66780/
 
+https://freesound.org/people/Tristan_Lohengrin/sounds/343835/
+
 <a target="_blank" href="/icons/set/circled-left-2">Back Arrow icon</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
 Photo by Acharaporn Kamornboonyarush from Pexels

@@ -38,6 +38,10 @@ export class LoadScene extends Phaser.Scene{
 
             //this.load.audio()
             this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
+            this.load.audio('ss_loss', './asset/menu/343835_tristan-lohengrin_happy-8bit-loop-01.mp3');
+            this.load.audio('game_music', './asset/menu/Blazer Rail.mp3');
+            this.load.audio('alert', './asset/menu/insight.mp3');
+
         }
 
         this.load.on("progress", (percentage) => {

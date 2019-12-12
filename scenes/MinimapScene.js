@@ -26,7 +26,7 @@ export class MinimapScene extends Phaser.Scene{
         this._option1 = null;
         this._option2 = null;
         this._option3 = null;
-        this._F11 = null;
+        //this._F11 = null;
         this._angularVel = 0.03;
         this._thrust = 0.15;
         this._solved = 0;
@@ -63,8 +63,6 @@ export class MinimapScene extends Phaser.Scene{
         this.load.audio('crash_2', './asset/collision_audio/237375__squareal__car-crash.mp3');
 
         this.load.image('menu_bg', './asset/menu/menu-bg.png');
-        //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
-        //this.load.atlas('base_map', './asset/spritesheet/tiles_spritesheet.png', 'asset/spritesheet/tiles_spritesheet.json');
 
         this.load.image("roads2W", "./asset/spritesheet/roads2W.png");
         this.load.image("RPGTileset", "./asset/spritesheet/TilesetPyxel.png");
@@ -72,7 +70,7 @@ export class MinimapScene extends Phaser.Scene{
 
         this.load.image("phone", "./asset/phone/mobile.png");
         this.load.image("screen_bg", "./asset/phone/bg.jpg");
-        this.load.image("screen_bg", "./asset/phone/speech-bubble.png");
+        this.load.image("msg_bg", "./asset/phone/speech-bubble.png");
 
         HighlightBar = this.add.graphics({fillStyle: {color: 0xff4f1f}});
     }
@@ -82,6 +80,12 @@ export class MinimapScene extends Phaser.Scene{
         // Screen Data
         const { width, height } = this.sys.game.config;
 
+        //Create Music
+        let game_music = this.sound.add('game_music',{
+            loop: true
+        });
+        game_music.play();
+
         // Map Setup
         const map = this.make.tilemap({ key: "map" });
         const tileset = map.addTilesetImage("roads2W", "roads2W");
@@ -89,8 +93,8 @@ export class MinimapScene extends Phaser.Scene{
 
         // Map rendered based on Layers 
         const baseLayer = map.createDynamicLayer("Map", tileset, 0, 0).setScale(3);
-        const collisionLayer = map.createDynamicLayer("Trees", tileset2, 0, 0).setScale(3);
-        const layer3 = map.createDynamicLayer("Bridge", tileset2, 0, 0).setScale(3);
+        const collisionLayer = map.createDynamicLayer("Collidables", tileset2, 0, 0).setScale(3);
+        const layer3 = map.createDynamicLayer("Above Player", tileset2, 0, 0).setScale(3).setDepth(2);
         collisionLayer.setCollisionByProperty({ canCollide: true });
 
         this.matter.world.convertTilemapLayer(collisionLayer);
@@ -108,7 +112,7 @@ export class MinimapScene extends Phaser.Scene{
                 padding: { x: 20, y: 10 },
                 backgroundColor: "#050505"
             })
-            .setScrollFactor(0);
+            .setScrollFactor(0).setDepth(20);
 
         this._socialscore = this.add.text(16, 60, "Social Score: 10/10", {
                 font: "18px monospace",
@@ -116,7 +120,7 @@ export class MinimapScene extends Phaser.Scene{
                 padding: { x: 20, y: 10 },
                 backgroundColor: "#050505"
             })
-            .setScrollFactor(0);
+            .setScrollFactor(0).setDepth(20);
         
         // Camera View Settings
         const camera = this.cameras.main;
@@ -194,18 +198,23 @@ export class MinimapScene extends Phaser.Scene{
     {
         console.log("Thrust: ", this._thrust);
 
+        // Cursor Keyboard Input
         let cursors = this.input.keyboard.addKeys({
             //up:Phaser.Input.Keyboard.KeyCodes.W,
             down:Phaser.Input.Keyboard.KeyCodes.SPACE,
             left:Phaser.Input.Keyboard.KeyCodes.A,
             right:Phaser.Input.Keyboard.KeyCodes.D
         });
-        
+
+
+        // Canvas Dimensions
         const { width, height } = this.sys.game.config;
 
+        // Car Physics  
         this._player.setFrictionAir(0.15);
         this._player.setMass(100);
         this._player.setFixedRotation();
+
 
         // CONSTANT FORWARD MOTION
         this._player.thrust(this._thrust);
@@ -214,7 +223,6 @@ export class MinimapScene extends Phaser.Scene{
         {
             this._player.thrust(-this._thrust/2);
         }
-
 
         // Turning Motion
         if (Phaser.Input.Keyboard.JustDown(rightTurn))
@@ -234,36 +242,13 @@ export class MinimapScene extends Phaser.Scene{
             this._player.setAngularVelocity( this._angularVel);
         }
         
-        // if (cursors.leftTurn.isDown)
-        // {
-        //     this._player.setAngularVelocity( - Math.PI / 2);   
-        // }
-        // else if (cursors.rightTurn.isDown)
-        // {
-        //     this._player.setAngularVelocity( Math.PI / 2);   
-        // }
-        // if(this._F11.isDown)
-        // {
-        //     /**
-        //      * this._map.height = window.screen.height;
-        //      * this._map.width = window.screen.width;
-        //      */
-        // }
-
 
         // Timer Setup for Phone Events
-        if(this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) > 0)
+        let phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000);
+        console.log(phone_timer/1000);
+        if(phone_timer > 0)
         {
-            let i = this._solved;
-            console.log(i);
-            switch(i)
-            {
-                case 0:  this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀"); break;
-                case 1:  this.onPhoneSubmit("Wanna Go Out?", "With U?😂" , "💩" , "Yes!", "Yes!"); break;
-                case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break;
-                default: i = 0;
-            }
-            this._solved = i+1;
+            this.phoneEventTimer(phone_timer);
 
         }
         else
@@ -284,7 +269,23 @@ export class MinimapScene extends Phaser.Scene{
         this.scene.start( ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over" );
     }
 
-    onPhoneSubmit (q, o1, o2, o3, correct_o, callback)
+    phoneEventTimer(phone_timer){
+        
+        let i = this._solved;
+            console.log(i);
+            switch(i)
+            {
+                case 0:  this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀"); break;
+                case 1:  this.onPhoneSubmit("Wanna Go Out?", "With U?😂" , "💩" , "Yes!", "Yes!"); break;
+                case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break;
+                default: i = 0;
+            }
+            this._solved = i+1;
+
+
+    }
+
+    onPhoneSubmit (q, o1, o2, o3, correct_o)
     {
         this._question.setText(q).setResolution(10);
         this._option1.setText(o1).setResolution(10);
@@ -293,6 +294,8 @@ export class MinimapScene extends Phaser.Scene{
         this._correct_o = (correct_o);
 
         console.log("Phone Event Triggerrred");
+        let alert = this.sound.add('alert');
+        alert.play();
         this._lastphoneEvent = this.time.now;
 
         if(this._phoneEventTimer - 1 > 10)
@@ -347,15 +350,20 @@ export class MinimapScene extends Phaser.Scene{
             this._option3.setAlpha(0);
 
             // Difficulty Increased
-            this._angularVel = this._angularVel + 0.013;
-            this._thrust = this._thrust + 0.05;
+            this._angularVel = this._angularVel + 0.012;
+            this._thrust = this._thrust + 0.04;
 
             if(this._correct_o !== option._text)
             {
-                this._socialscorevalue -= 5; 
-                this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10");    
+                this.notCorrectPhoneInput();
             }
         })
+    }
+
+    notCorrectPhoneInput(){
+        // Reduce phone 
+        this._socialscorevalue -= 5; 
+        this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10"); 
     }
 
     phoneResponseTimer(time)

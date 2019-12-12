@@ -207,6 +207,9 @@ function (_Phaser$Scene) {
         //this.load.audio()
 
         this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
+        this.load.audio('ss_loss', './asset/menu/343835_tristan-lohengrin_happy-8bit-loop-01.mp3');
+        this.load.audio('game_music', './asset/menu/Blazer Rail.mp3');
+        this.load.audio('alert', './asset/menu/insight.mp3');
       }
 
       this.load.on("progress", function (percentage) {
@@ -286,9 +289,10 @@ function (_Phaser$Scene) {
       background.displayWidth = 800;
       background.displayHeight = 600; // Music
 
-      var menu_music = this.sound.play('menu_music', {
+      var menu_music = this.sound.add('menu_music', {
         loop: true
       });
+      menu_music.play();
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
           height = _this$sys$game$config.height;
@@ -314,6 +318,7 @@ function (_Phaser$Scene) {
       });
       playButton.on("pointerup", function () {
         console.log("Start Game");
+        menu_music.stop();
 
         _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Minimap, "Menu -> Minimap");
       });
@@ -331,8 +336,6 @@ function (_Phaser$Scene) {
         carmouse.setVisible(false);
       });
       instructionsButton.on("pointerup", function () {
-        console.log("Start Game");
-
         _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Instruction, "Menu -> Instructions");
       });
       var AboutButton = this.add.text(350, 500, "About", {
@@ -423,8 +426,8 @@ function (_Phaser$Scene) {
     _this._phonescreen_bg = null;
     _this._option1 = null;
     _this._option2 = null;
-    _this._option3 = null;
-    _this._F11 = null;
+    _this._option3 = null; //this._F11 = null;
+
     _this._angularVel = 0.03;
     _this._thrust = 0.15;
     _this._solved = 0;
@@ -460,15 +463,13 @@ function (_Phaser$Scene) {
       //this.load.audio('menu_music', './asset/menu/Sci-fi Pulse Loop.mp3');
       this.load.audio('crash_1', './asset/collision_audio/66780__kevinkace__crate-break-4.mp3');
       this.load.audio('crash_2', './asset/collision_audio/237375__squareal__car-crash.mp3');
-      this.load.image('menu_bg', './asset/menu/menu-bg.png'); //this.load.spritesheet('base_tiles_ss', './asset/spritesheet/tiles_spritesheet.png');
-      //this.load.atlas('base_map', './asset/spritesheet/tiles_spritesheet.png', 'asset/spritesheet/tiles_spritesheet.json');
-
+      this.load.image('menu_bg', './asset/menu/menu-bg.png');
       this.load.image("roads2W", "./asset/spritesheet/roads2W.png");
       this.load.image("RPGTileset", "./asset/spritesheet/TilesetPyxel.png");
       this.load.tilemapTiledJSON("map", "./asset/spritesheet/map_updated.json");
       this.load.image("phone", "./asset/phone/mobile.png");
       this.load.image("screen_bg", "./asset/phone/bg.jpg");
-      this.load.image("screen_bg", "./asset/phone/speech-bubble.png");
+      this.load.image("msg_bg", "./asset/phone/speech-bubble.png");
       HighlightBar = this.add.graphics({
         fillStyle: {
           color: 0xff4f1f
@@ -481,7 +482,12 @@ function (_Phaser$Scene) {
       // Screen Data
       var _this$sys$game$config = this.sys.game.config,
           width = _this$sys$game$config.width,
-          height = _this$sys$game$config.height; // Map Setup
+          height = _this$sys$game$config.height; //Create Music
+
+      var game_music = this.sound.add('game_music', {
+        loop: true
+      });
+      game_music.play(); // Map Setup
 
       var map = this.make.tilemap({
         key: "map"
@@ -490,8 +496,8 @@ function (_Phaser$Scene) {
       var tileset2 = map.addTilesetImage("RPG TileSet", "RPGTileset"); // Map rendered based on Layers 
 
       var baseLayer = map.createDynamicLayer("Map", tileset, 0, 0).setScale(3);
-      var collisionLayer = map.createDynamicLayer("Trees", tileset2, 0, 0).setScale(3);
-      var layer3 = map.createDynamicLayer("Bridge", tileset2, 0, 0).setScale(3);
+      var collisionLayer = map.createDynamicLayer("Collidables", tileset2, 0, 0).setScale(3);
+      var layer3 = map.createDynamicLayer("Above Player", tileset2, 0, 0).setScale(3).setDepth(2);
       collisionLayer.setCollisionByProperty({
         canCollide: true
       });
@@ -511,7 +517,7 @@ function (_Phaser$Scene) {
           y: 10
         },
         backgroundColor: "#050505"
-      }).setScrollFactor(0);
+      }).setScrollFactor(0).setDepth(20);
       this._socialscore = this.add.text(16, 60, "Social Score: 10/10", {
         font: "18px monospace",
         fill: "#ffffff",
@@ -520,7 +526,7 @@ function (_Phaser$Scene) {
           y: 10
         },
         backgroundColor: "#050505"
-      }).setScrollFactor(0); // Camera View Settings
+      }).setScrollFactor(0).setDepth(20); // Camera View Settings
 
       var camera = this.cameras.main;
       camera.startFollow(this._player);
@@ -590,16 +596,18 @@ function (_Phaser$Scene) {
   }, {
     key: "update",
     value: function update(time, delta) {
-      console.log("Thrust: ", this._thrust);
+      console.log("Thrust: ", this._thrust); // Cursor Keyboard Input
+
       var cursors = this.input.keyboard.addKeys({
         //up:Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.SPACE,
         left: Phaser.Input.Keyboard.KeyCodes.A,
         right: Phaser.Input.Keyboard.KeyCodes.D
-      });
+      }); // Canvas Dimensions
+
       var _this$sys$game$config2 = this.sys.game.config,
           width = _this$sys$game$config2.width,
-          height = _this$sys$game$config2.height;
+          height = _this$sys$game$config2.height; // Car Physics  
 
       this._player.setFrictionAir(0.15);
 
@@ -625,46 +633,14 @@ function (_Phaser$Scene) {
         this._player.setAngularVelocity(-this._angularVel);
       } else if (cursors.right.isDown) {
         this._player.setAngularVelocity(this._angularVel);
-      } // if (cursors.leftTurn.isDown)
-      // {
-      //     this._player.setAngularVelocity( - Math.PI / 2);   
-      // }
-      // else if (cursors.rightTurn.isDown)
-      // {
-      //     this._player.setAngularVelocity( Math.PI / 2);   
-      // }
-      // if(this._F11.isDown)
-      // {
-      //     /**
-      //      * this._map.height = window.screen.height;
-      //      * this._map.width = window.screen.width;
-      //      */
-      // }
-      // Timer Setup for Phone Events
+      } // Timer Setup for Phone Events
 
 
-      if (this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000) > 0) {
-        var i = this._solved;
-        console.log(i);
+      var phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000);
+      console.log(phone_timer / 1000);
 
-        switch (i) {
-          case 0:
-            this.onPhoneSubmit("How was your day?", "💩", "💩", "😀", "😀");
-            break;
-
-          case 1:
-            this.onPhoneSubmit("Wanna Go Out?", "With U?😂", "💩", "Yes!", "Yes!");
-            break;
-
-          case 2:
-            this.onPhoneSubmit("I'm Leaving You?", "Okay", "Lmao", "NO", "NO");
-            break;
-
-          default:
-            i = 0;
-        }
-
-        this._solved = i + 1;
+      if (phone_timer > 0) {
+        this.phoneEventTimer(phone_timer);
       } else {} //Nothing
       // Lose if Score too low 
 
@@ -679,8 +655,33 @@ function (_Phaser$Scene) {
       this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over");
     }
   }, {
+    key: "phoneEventTimer",
+    value: function phoneEventTimer(phone_timer) {
+      var i = this._solved;
+      console.log(i);
+
+      switch (i) {
+        case 0:
+          this.onPhoneSubmit("How was your day?", "💩", "💩", "😀", "😀");
+          break;
+
+        case 1:
+          this.onPhoneSubmit("Wanna Go Out?", "With U?😂", "💩", "Yes!", "Yes!");
+          break;
+
+        case 2:
+          this.onPhoneSubmit("I'm Leaving You?", "Okay", "Lmao", "NO", "NO");
+          break;
+
+        default:
+          i = 0;
+      }
+
+      this._solved = i + 1;
+    }
+  }, {
     key: "onPhoneSubmit",
-    value: function onPhoneSubmit(q, o1, o2, o3, correct_o, callback) {
+    value: function onPhoneSubmit(q, o1, o2, o3, correct_o) {
       this._question.setText(q).setResolution(10);
 
       this._option1.setText(o1).setResolution(10);
@@ -691,6 +692,8 @@ function (_Phaser$Scene) {
 
       this._correct_o = correct_o;
       console.log("Phone Event Triggerrred");
+      var alert = this.sound.add('alert');
+      alert.play();
       this._lastphoneEvent = this.time.now;
 
       if (this._phoneEventTimer - 1 > 10) {
@@ -811,15 +814,21 @@ function (_Phaser$Scene) {
         _this2._option3.setAlpha(0); // Difficulty Increased
 
 
-        _this2._angularVel = _this2._angularVel + 0.013;
-        _this2._thrust = _this2._thrust + 0.05;
+        _this2._angularVel = _this2._angularVel + 0.012;
+        _this2._thrust = _this2._thrust + 0.04;
 
         if (_this2._correct_o !== option._text) {
-          _this2._socialscorevalue -= 5;
-
-          _this2._socialscore.setText("Social Score: " + _this2._socialscorevalue + "/10");
+          _this2.notCorrectPhoneInput();
         }
       });
+    }
+  }, {
+    key: "notCorrectPhoneInput",
+    value: function notCorrectPhoneInput() {
+      // Reduce phone 
+      this._socialscorevalue -= 5;
+
+      this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10");
     }
   }, {
     key: "phoneResponseTimer",
@@ -1243,7 +1252,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63506" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51259" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
