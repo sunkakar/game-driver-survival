@@ -339,24 +339,6 @@ function (_Phaser$Scene) {
       instructionsButton.on("pointerup", function () {
         _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Instruction, "Menu -> Instructions");
       });
-      var AboutButton = this.add.text(350, 500, "About", {
-        font: "15px monospace",
-        color: "white"
-      }).setShadow(5, 5, "#5588EE", 0, true, true);
-      AboutButton.setScale(3).setResolution(5);
-      AboutButton.setInteractive();
-      AboutButton.on("pointerover", function () {
-        carmouse.y = 510;
-        carmouse.setVisible(true);
-      });
-      AboutButton.on("pointerout", function () {
-        carmouse.setVisible(false);
-      });
-      AboutButton.on("pointerup", function () {
-        console.log("Start Game");
-
-        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.About, "Menu -> Instructions");
-      });
     }
   }]);
 
@@ -1403,7 +1385,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62590" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63114" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
