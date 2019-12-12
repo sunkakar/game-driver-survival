@@ -131,6 +131,7 @@ var ActiveScene = {
     Menu: "Menu",
     Minimap: "Minimap",
     GameOver: "GameOver",
+    GameOverGood: "GameOverGood",
     About: "About",
     Instruction: "Instruction"
   }
@@ -656,7 +657,7 @@ function (_Phaser$Scene) {
 
       if (this._socialscorevalue <= 0) {
         console.log("Score Loss");
-        this.endGame();
+        this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.GameOverGood, "Minimap -> Game Over Good");
       }
     }
   }, {
@@ -989,6 +990,105 @@ function (_Phaser$Scene) {
 }(Phaser.Scene);
 
 exports.GameOverScene = GameOverScene;
+},{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"scenes/GameOverGoodScene.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.GameOverGoodScene = void 0;
+
+var _ACTIVE_SCENE = require("./ACTIVE_SCENE.js");
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Menu Scene
+/// Displays the Menu and shows options
+var GameOverGoodScene =
+/*#__PURE__*/
+function (_Phaser$Scene) {
+  _inherits(GameOverGoodScene, _Phaser$Scene);
+
+  function GameOverGoodScene() {
+    _classCallCheck(this, GameOverGoodScene);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(GameOverGoodScene).call(this, {
+      key: _ACTIVE_SCENE.ActiveScene.AvailableScenes.GameOverGood
+    }));
+  }
+
+  _createClass(GameOverGoodScene, [{
+    key: "init",
+    value: function init(msg) {
+      console.log("GameOver: ", msg);
+    }
+  }, {
+    key: "preload",
+    value: function preload() {
+      this.load.image('statistics', './asset/menu/statistics.png');
+    }
+  }, {
+    key: "create",
+    value: function create() {
+      var _this = this;
+
+      // Height and Width for screen
+      var _this$sys$game$config = this.sys.game.config,
+          width = _this$sys$game$config.width,
+          height = _this$sys$game$config.height;
+      var logo = this.add.image(400, height * 0.6, 'statistics').setDepth(2);
+      logo.setScale(0.5);
+      var title = this.add.text(width * 0.3, height * 0.05, "You Chose Safety!", {
+        font: "17px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(3).setResolution(5);
+      var goal_description = this.add.text(width * 0.02, height * 0.3, "It's important to be safe on the roads. Over 90% of crashes are the fault of \ndrivers. The most frequent driver mistake is 'Recognition Error' i.e. the\ndriver's inattention. Here are some statistics from the National Safety Council.\nIs it worth it? You decide 😀", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true).setScale(1).setResolution(5);
+      var carmouse = this.add.sprite(120, height * 0.8, 'car');
+      carmouse.setScale(1 / 16).setOrigin(0).setVisible(false);
+      var playButton = //this.add.text(350,300, 'Play', { fontFamily: '"Roboto Condensed"' });
+      this.add.text(220, height * 0.8, "Play Again!", {
+        font: "18px monospace",
+        color: "white"
+      }).setShadow(5, 5, "#5588EE", 0, true, true);
+      playButton.setScale(3).setResolution(5);
+      playButton.setInteractive();
+      playButton.on("pointerover", function () {
+        carmouse.setVisible(true);
+      });
+      playButton.on("pointerout", function () {
+        carmouse.setVisible(false);
+      });
+      playButton.on("pointerup", function () {
+        console.log("Start Game");
+
+        _this.scene.start(_ACTIVE_SCENE.ActiveScene.AvailableScenes.Menu, "GameOver -> Menu");
+      });
+    }
+  }]);
+
+  return GameOverGoodScene;
+}(Phaser.Scene);
+
+exports.GameOverGoodScene = GameOverGoodScene;
 },{"./ACTIVE_SCENE.js":"scenes/ACTIVE_SCENE.js"}],"scenes/AboutScene.js":[function(require,module,exports) {
 "use strict";
 
@@ -1243,6 +1343,8 @@ var _MinimapScene = require("./scenes/MinimapScene");
 
 var _GameOverScene = require("./scenes/GameOverScene");
 
+var _GameOverGoodScene = require("./scenes/GameOverGoodScene");
+
 var _AboutScene = require("./scenes/AboutScene");
 
 var _InstructionScene = require("./scenes/InstructionScene");
@@ -1257,7 +1359,7 @@ var config = {
   // Canvas height in pixels
   backgroundColor: '#f09020',
   parent: "game-container",
-  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene, _GameOverScene.GameOverScene, _AboutScene.AboutScene, _InstructionScene.InstructionScene],
+  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene, _MinimapScene.MinimapScene, _GameOverScene.GameOverScene, _AboutScene.AboutScene, _InstructionScene.InstructionScene, _GameOverGoodScene.GameOverGoodScene],
   // render:{
   //   pixelArt: true
   // },
@@ -1273,7 +1375,7 @@ var config = {
   }
 };
 var game = new Phaser.Game(config);
-},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js","./scenes/AboutScene":"scenes/AboutScene.js","./scenes/InstructionScene":"scenes/InstructionScene.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./scenes/LoadScene":"scenes/LoadScene.js","./scenes/MenuScene":"scenes/MenuScene.js","./scenes/MinimapScene":"scenes/MinimapScene.js","./scenes/GameOverScene":"scenes/GameOverScene.js","./scenes/GameOverGoodScene":"scenes/GameOverGoodScene.js","./scenes/AboutScene":"scenes/AboutScene.js","./scenes/InstructionScene":"scenes/InstructionScene.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1301,7 +1403,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51259" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60945" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

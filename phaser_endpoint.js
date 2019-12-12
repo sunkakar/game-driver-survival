@@ -2,6 +2,7 @@ import { LoadScene } from './scenes/LoadScene';
 import { MenuScene } from './scenes/MenuScene';
 import { MinimapScene } from './scenes/MinimapScene';
 import { GameOverScene } from './scenes/GameOverScene';
+import { GameOverGoodScene } from './scenes/GameOverGoodScene';
 import { AboutScene } from './scenes/AboutScene';
 import { InstructionScene } from './scenes/InstructionScene';
 
@@ -18,7 +19,8 @@ const config = {
       MinimapScene,
       GameOverScene,
       AboutScene,
-      InstructionScene
+      InstructionScene,
+      GameOverGoodScene
     ],
     // render:{
     //   pixelArt: true

@@ -265,7 +265,7 @@ export class MinimapScene extends Phaser.Scene{
         if(this._socialscorevalue <= 0)
         {
             console.log("Score Loss");
-            this.endGame();
+            this.scene.start( ActiveScene.AvailableScenes.GameOverGood, "Minimap -> Game Over Good" );
         }
 
     }
@@ -297,7 +297,6 @@ export class MinimapScene extends Phaser.Scene{
                 case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break; 
                 default: i = 0;
             }
-
 
     }
 

@@ -6,6 +6,7 @@ export const ActiveScene = {
         Menu: "Menu",
         Minimap: "Minimap",
         GameOver: "GameOver",
+        GameOverGood: "GameOverGood",
         About: "About",
         Instruction: "Instruction"
     }
