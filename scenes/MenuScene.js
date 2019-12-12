@@ -74,22 +74,5 @@ export class MenuScene extends Phaser.Scene{
             this.scene.start( ActiveScene.AvailableScenes.Instruction, "Menu -> Instructions" );
         })
 
-
-        let AboutButton = this.add.text(350, 500 , "About", {font: "15px monospace", color: "white"}).setShadow(5, 5, "#5588EE", 0, true, true);
-        AboutButton.setScale(3).setResolution(5);
-        AboutButton.setInteractive();
-        AboutButton.on("pointerover", () => {
-            carmouse.y = 510;
-            carmouse.setVisible(true);
-        })
-
-        AboutButton.on("pointerout", () => {
-            carmouse.setVisible(false);
-        })
-
-        AboutButton.on("pointerup", () => {
-            console.log("Start Game");
-            this.scene.start( ActiveScene.AvailableScenes.About, "Menu -> Instructions" );
-        })
     }
 }
