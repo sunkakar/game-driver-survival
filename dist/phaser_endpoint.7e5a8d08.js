@@ -395,6 +395,7 @@ var controls;
 var HighlightBar;
 var rightTurn;
 var leftTurn;
+var i = 0;
 
 var MinimapScene =
 /*#__PURE__*/
@@ -446,8 +447,8 @@ function (_Phaser$Scene) {
       this._socialscorevalue = 10;
       this._lostGame = false;
       this._phone = null;
-      this._data = [];
-      this._lastphoneEvent = this.time.now;
+      this._data = []; //this._lastphoneEvent = this.time.now;
+
       this._phoneEventTimer = 20;
       this._phonescreen_bg = null;
       this._option1 = null;
@@ -545,7 +546,7 @@ function (_Phaser$Scene) {
         var crash_sound = this.scene.sound.play('crash_1');
         healthvalue = healthvalue - Math.floor(Math.random() * 8 + 1);
 
-        if (healthvalue > 0 && this.scene._socialscorevalue > 0) {
+        if (healthvalue > 0) {
           this.scene._text = "Health: " + healthvalue + "%";
 
           this.scene._score.setText(this.scene._text);
@@ -593,9 +594,7 @@ function (_Phaser$Scene) {
 
       this.phoneHighlight(this._option1);
       this.phoneHighlight(this._option2);
-      this.phoneHighlight(this._option3); //let timedEvent = this.time.now;
-      //console.log(timedEvent);
-      //delayedCall(3000, this.onPhoneSubmit, [], this);
+      this.phoneHighlight(this._option3); //delayedCall(3000, this.onPhoneSubmit, [], this);
 
       rightTurn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
       leftTurn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
@@ -643,17 +642,16 @@ function (_Phaser$Scene) {
       } // Timer Setup for Phone Events
 
 
-      var phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000) - 3;
+      this._phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000);
 
-      this._timer.setText(Math.round(-phone_timer / 1000 * 10) / 10 + "s");
+      this._timer.setText(Math.round(-this._phone_timer / 1000 * 10) / 10 + "s");
 
-      console.log(phone_timer / 1000);
+      console.log("Phone Timer: ", Math.round(-this._phone_timer / 1000 * 10) / 10, "| Other ", this._solved, "| LPE ", this._lastphoneEvent);
 
-      if (phone_timer > 0) {
-        this.phoneEventTimer(phone_timer);
-      } else {
-        this.hidePhone();
-      } // Lose if Score too low 
+      if (this._phone_timer > 0) {
+        this.phoneEventTimer(); // this.
+      } else {} // Nothing
+        // Lose if Score too low 
 
 
       if (this._socialscorevalue <= 0) {
@@ -668,8 +666,17 @@ function (_Phaser$Scene) {
     }
   }, {
     key: "phoneEventTimer",
-    value: function phoneEventTimer(phone_timer) {
-      var i = this._solved;
+    value: function phoneEventTimer() {
+      //let i = this._solved;
+      if (this._solved) {//Nothing
+        //this._solved = 0;
+      } else {
+        // Reduce Points
+        if (this._lastphoneEvent != null) {
+          this.hidePhone();
+        }
+      }
+
       console.log(i);
 
       switch (i) {
@@ -688,8 +695,6 @@ function (_Phaser$Scene) {
         default:
           i = 0;
       }
-
-      this._solved = i + 1;
     }
   }, {
     key: "onPhoneSubmit",
@@ -820,6 +825,7 @@ function (_Phaser$Scene) {
       option.on("pointerup", function () {
         // Submission Check
         console.log("Submission", option._text);
+        _this2._solved = 1;
 
         _this2._phone.setAlpha(0);
 
@@ -842,6 +848,8 @@ function (_Phaser$Scene) {
         if (_this2._correct_o !== option._text) {
           _this2.notCorrectPhoneInput(2);
         }
+
+        _this2._solved = 1;
       });
     }
   }, {

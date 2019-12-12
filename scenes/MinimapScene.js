@@ -5,6 +5,7 @@ let controls;
 let HighlightBar;
 let rightTurn;
 let leftTurn;
+let i = 0;
 
 export class MinimapScene extends Phaser.Scene{
     constructor(player = null, health = 100){
@@ -45,7 +46,7 @@ export class MinimapScene extends Phaser.Scene{
         this._lostGame = false;
         this._phone = null;
         this._data = [];
-        this._lastphoneEvent = this.time.now;
+        //this._lastphoneEvent = this.time.now;
         this._phoneEventTimer = 20;
         this._phonescreen_bg = null;
         this._option1 = null;
@@ -143,7 +144,7 @@ export class MinimapScene extends Phaser.Scene{
         {
             let crash_sound = this.scene.sound.play('crash_1');
             healthvalue = healthvalue - Math.floor(Math.random()*(8)+1);
-            if(healthvalue > 0 && this.scene._socialscorevalue > 0 )
+            if(healthvalue > 0)
             {
                 this.scene._text = "Health: " + healthvalue + "%";
                 this.scene._score.setText(this.scene._text);    
@@ -186,11 +187,6 @@ export class MinimapScene extends Phaser.Scene{
         this.phoneHighlight(this._option1);
         this.phoneHighlight(this._option2);
         this.phoneHighlight(this._option3);
-
-
-        
-        //let timedEvent = this.time.now;
-        //console.log(timedEvent);
 
         
         
@@ -250,17 +246,18 @@ export class MinimapScene extends Phaser.Scene{
         
 
         // Timer Setup for Phone Events
-        let phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) - 3;
-        this._timer.setText( Math.round( (-phone_timer/1000) * 10 ) / 10 + "s");
-        console.log(phone_timer/1000);
-        if(phone_timer > 0)
+        this._phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000);
+        this._timer.setText( Math.round( (-this._phone_timer/1000) * 10 ) / 10 + "s");
+        console.log("Phone Timer: ", Math.round( (-this._phone_timer/1000) * 10 ) / 10, "| Other " ,this._solved, "| LPE " ,this._lastphoneEvent);
+        
+        if(this._phone_timer > 0)
         {
-            this.phoneEventTimer(phone_timer);
-
+            this.phoneEventTimer();
+            // this.
         }
         else
         {
-            this.hidePhone();
+            // Nothing
         }
 
 
@@ -277,18 +274,29 @@ export class MinimapScene extends Phaser.Scene{
         this.scene.start( ActiveScene.AvailableScenes.GameOver, "Minimap -> Game Over" );
     }
 
-    phoneEventTimer(phone_timer){
-        
-        let i = this._solved;
-            console.log(i);
+    phoneEventTimer(){
+        //let i = this._solved;
+
+        if(this._solved)
+        {
+            //Nothing
+            //this._solved = 0;
+        }
+        else
+        {
+            // Reduce Points
+            if(this._lastphoneEvent != null)
+            {this.hidePhone()}
+        }
+
+        console.log(i);
             switch(i)
             {
                 case 0:  this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀"); break;
                 case 1:  this.onPhoneSubmit("Wanna Go Out?", "With U?😂" , "💩" , "Yes!", "Yes!"); break;
-                case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break;
+                case 2:  this.onPhoneSubmit("I'm Leaving You?", "Okay" , "Lmao" , "NO", "NO"); break; 
                 default: i = 0;
             }
-            this._solved = i+1;
 
 
     }
@@ -332,9 +340,7 @@ export class MinimapScene extends Phaser.Scene{
             this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
             console.log("Fastest Speed");
         }
-        
 
-        
     }
 
     phoneHighlight(option) 
@@ -352,6 +358,7 @@ export class MinimapScene extends Phaser.Scene{
         option.on("pointerup", () => {
             // Submission Check
             console.log("Submission", option._text);
+            this._solved = 1;
             this._phone.setAlpha(0);
             this._phonescreen_bg.setAlpha(0);
             this._question.setAlpha(0);
@@ -368,6 +375,8 @@ export class MinimapScene extends Phaser.Scene{
             {
                 this.notCorrectPhoneInput(2);
             }
+
+            this._solved = 1;
         })
     }
 
