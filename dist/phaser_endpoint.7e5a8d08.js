@@ -431,6 +431,7 @@ function (_Phaser$Scene) {
     _this._angularVel = 0.03;
     _this._thrust = 0.15;
     _this._solved = 0;
+    _this._timer = null;
     return _this;
   }
 
@@ -551,6 +552,7 @@ function (_Phaser$Scene) {
         } else {
           // Game Over: Send to new Game Over scene
           var lose = this.scene.sound.play('crash_2');
+          console.log("Crash Loss");
           this.scene.endGame();
         }
       }); // Phone Graphic
@@ -570,6 +572,9 @@ function (_Phaser$Scene) {
       this._option1 = this.add.text(width * 0.78, height * 0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
       this._option2 = this.add.text(width * 0.78, height * 0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
       this._option3 = this.add.text(width * 0.78, height * 0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
+      this._timer = this.add.text(width * 0.74, height * 0.51, "10s", {
+        font: "16px monospace"
+      }).setScrollFactor(0).setDepth(20);
 
       this._phone.setAlpha(0);
 
@@ -581,7 +586,9 @@ function (_Phaser$Scene) {
 
       this._option2.setAlpha(0);
 
-      this._option3.setAlpha(0); //Interactive Setup
+      this._option3.setAlpha(0);
+
+      this._timer.setAlpha(0); //Make Interactive Setup
 
 
       this.phoneHighlight(this._option1);
@@ -636,16 +643,21 @@ function (_Phaser$Scene) {
       } // Timer Setup for Phone Events
 
 
-      var phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000);
+      var phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer * 1000) - 3;
+
+      this._timer.setText(Math.round(-phone_timer / 1000 * 10) / 10 + "s");
+
       console.log(phone_timer / 1000);
 
       if (phone_timer > 0) {
         this.phoneEventTimer(phone_timer);
-      } else {} //Nothing
-      // Lose if Score too low 
+      } else {
+        this.hidePhone();
+      } // Lose if Score too low 
 
 
       if (this._socialscorevalue <= 0) {
+        console.log("Score Loss");
         this.endGame();
       }
     }
@@ -714,29 +726,37 @@ function (_Phaser$Scene) {
           targets: this._question,
           alpha: 1,
           duration: 1000,
-          ease: 'Power2',
-          loop: 1
+          ease: 'Power2'
         }, this);
         this.tweens.add({
           targets: this._option1,
           alpha: 1,
           duration: 1000,
-          ease: 'Power2',
-          loop: 1
+          ease: 'Power2'
         }, this);
         this.tweens.add({
           targets: this._option2,
           alpha: 1,
           duration: 1000,
-          ease: 'Power2',
-          loop: 1
+          ease: 'Power2'
         }, this);
         this.tweens.add({
           targets: this._option3,
           alpha: 1,
           duration: 1000,
-          ease: 'Power2',
-          loop: 1
+          ease: 'Power2'
+        }, this);
+        this.tweens.add({
+          targets: this._option3,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2'
+        }, this);
+        this.tweens.add({
+          targets: this._timer,
+          alpha: 1,
+          duration: 1000,
+          ease: 'Power2'
         }, this);
         this._phoneEventTimer -= 1;
       } else {
@@ -811,22 +831,43 @@ function (_Phaser$Scene) {
 
         _this2._option2.setAlpha(0);
 
-        _this2._option3.setAlpha(0); // Difficulty Increased
+        _this2._option3.setAlpha(0);
+
+        _this2._timer.setAlpha(0); // Difficulty Increased
 
 
         _this2._angularVel = _this2._angularVel + 0.012;
         _this2._thrust = _this2._thrust + 0.04;
 
         if (_this2._correct_o !== option._text) {
-          _this2.notCorrectPhoneInput();
+          _this2.notCorrectPhoneInput(2);
         }
       });
     }
   }, {
+    key: "hidePhone",
+    value: function hidePhone() {
+      this._phone.setAlpha(0);
+
+      this._phonescreen_bg.setAlpha(0);
+
+      this._question.setAlpha(0);
+
+      this._option1.setAlpha(0);
+
+      this._option2.setAlpha(0);
+
+      this._option3.setAlpha(0);
+
+      this._timer.setAlpha(0);
+
+      this.notCorrectPhoneInput(5);
+    }
+  }, {
     key: "notCorrectPhoneInput",
-    value: function notCorrectPhoneInput() {
+    value: function notCorrectPhoneInput(change) {
       // Reduce phone 
-      this._socialscorevalue -= 5;
+      this._socialscorevalue -= change;
 
       this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10");
     }

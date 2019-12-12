@@ -30,6 +30,7 @@ export class MinimapScene extends Phaser.Scene{
         this._angularVel = 0.03;
         this._thrust = 0.15;
         this._solved = 0;
+        this._timer = null;
     }
 
     init(msg)
@@ -151,6 +152,7 @@ export class MinimapScene extends Phaser.Scene{
             {
                 // Game Over: Send to new Game Over scene
                 let lose = this.scene.sound.play('crash_2');
+                console.log("Crash Loss");
                 this.scene.endGame();
             }
         });
@@ -166,6 +168,8 @@ export class MinimapScene extends Phaser.Scene{
         this._option1 = this.add.text(width*0.78,height*0.7, 'Bye').setFontSize(15).setDepth(11).setScrollFactor(0);
         this._option2 = this.add.text(width*0.78,height*0.8, 'I Dont Care').setFontSize(15).setDepth(11).setScrollFactor(0);
         this._option3 = this.add.text(width*0.78,height*0.9, 'Maybe').setFontSize(15).setDepth(11).setScrollFactor(0);
+        
+        this._timer = this.add.text(width*0.74,height*0.51, "10s", {font: "16px monospace"}).setScrollFactor(0).setDepth(20);
     
 
         this._phone.setAlpha(0);
@@ -174,9 +178,11 @@ export class MinimapScene extends Phaser.Scene{
         this._option1.setAlpha(0);
         this._option2.setAlpha(0);
         this._option3.setAlpha(0);
+        this._timer.setAlpha(0);
+
           
 
-        //Interactive Setup
+        //Make Interactive Setup
         this.phoneHighlight(this._option1);
         this.phoneHighlight(this._option2);
         this.phoneHighlight(this._option3);
@@ -244,7 +250,8 @@ export class MinimapScene extends Phaser.Scene{
         
 
         // Timer Setup for Phone Events
-        let phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000);
+        let phone_timer = this.time.now - (this._lastphoneEvent + this._phoneEventTimer*1000) - 3;
+        this._timer.setText( Math.round( (-phone_timer/1000) * 10 ) / 10 + "s");
         console.log(phone_timer/1000);
         if(phone_timer > 0)
         {
@@ -253,13 +260,14 @@ export class MinimapScene extends Phaser.Scene{
         }
         else
         {
-            //Nothing
+            this.hidePhone();
         }
 
 
         // Lose if Score too low 
         if(this._socialscorevalue <= 0)
         {
+            console.log("Score Loss");
             this.endGame();
         }
 
@@ -303,10 +311,12 @@ export class MinimapScene extends Phaser.Scene{
             // Fade In Phone Overlay
             this.tweens.add({targets: this._phone,alpha: 1,duration: 2000,ease: 'Power2'}, this);
             this.tweens.add({targets: this._phonescreen_bg,alpha: 1,duration: 2000,ease: 'Power2'}, this);
-            this.tweens.add({targets: this._question,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
-            this.tweens.add({targets: this._option1,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
-            this.tweens.add({targets: this._option2,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
-            this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2', loop: 1}, this);
+            this.tweens.add({targets: this._question,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._option1,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._option2,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._option3,alpha: 1,duration: 1000,ease: 'Power2'}, this);
+            this.tweens.add({targets: this._timer,alpha: 1,duration: 1000,ease: 'Power2'}, this);
 
             this._phoneEventTimer -= 1;
         }
@@ -348,6 +358,7 @@ export class MinimapScene extends Phaser.Scene{
             this._option1.setAlpha(0);
             this._option2.setAlpha(0);
             this._option3.setAlpha(0);
+            this._timer.setAlpha(0);
 
             // Difficulty Increased
             this._angularVel = this._angularVel + 0.012;
@@ -355,14 +366,26 @@ export class MinimapScene extends Phaser.Scene{
 
             if(this._correct_o !== option._text)
             {
-                this.notCorrectPhoneInput();
+                this.notCorrectPhoneInput(2);
             }
         })
     }
 
-    notCorrectPhoneInput(){
+    hidePhone() {
+        this._phone.setAlpha(0);
+        this._phonescreen_bg.setAlpha(0);
+        this._question.setAlpha(0);
+        this._option1.setAlpha(0);
+        this._option2.setAlpha(0);
+        this._option3.setAlpha(0);
+        this._timer.setAlpha(0);
+
+        this.notCorrectPhoneInput(5);
+    }
+
+    notCorrectPhoneInput(change){
         // Reduce phone 
-        this._socialscorevalue -= 5; 
+        this._socialscorevalue -= change; 
         this._socialscore.setText("Social Score: " + this._socialscorevalue + "/10"); 
     }
 
