@@ -669,7 +669,7 @@ function (_Phaser$Scene) {
     key: "phoneEventTimer",
     value: function phoneEventTimer() {
       //let i = this._solved;
-      if (this._solved) {//Nothing
+      if (this._solved == 1) {//Nothing
         //this._solved = 0;
       } else {
         // Reduce Points
@@ -679,6 +679,7 @@ function (_Phaser$Scene) {
       }
 
       console.log(i);
+      this._solved = 0;
 
       switch (i) {
         case 0:
@@ -825,8 +826,7 @@ function (_Phaser$Scene) {
       });
       option.on("pointerup", function () {
         // Submission Check
-        console.log("Submission", option._text);
-        _this2._solved = 1;
+        console.log("Submission", option._text); //this._solved = 1;
 
         _this2._phone.setAlpha(0);
 
@@ -1403,7 +1403,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60945" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62590" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -276,8 +276,7 @@ export class MinimapScene extends Phaser.Scene{
 
     phoneEventTimer(){
         //let i = this._solved;
-
-        if(this._solved)
+        if(this._solved == 1)
         {
             //Nothing
             //this._solved = 0;
@@ -290,6 +289,7 @@ export class MinimapScene extends Phaser.Scene{
         }
 
         console.log(i);
+        this._solved = 0;
             switch(i)
             {
                 case 0:  this.onPhoneSubmit("How was your day?", "💩" , "💩" , "😀", "😀"); break;
@@ -357,7 +357,7 @@ export class MinimapScene extends Phaser.Scene{
         option.on("pointerup", () => {
             // Submission Check
             console.log("Submission", option._text);
-            this._solved = 1;
+            //this._solved = 1;
             this._phone.setAlpha(0);
             this._phonescreen_bg.setAlpha(0);
             this._question.setAlpha(0);
